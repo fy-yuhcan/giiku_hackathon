@@ -3,7 +3,7 @@ FROM node:20
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
-COPY . .
 
-CMD ["npm", "start"]
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+CMD ["npm", "run", "dev"]
