@@ -9,3 +9,4 @@ ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm install
 
 CMD ["npm", "run", "dev"]
+
