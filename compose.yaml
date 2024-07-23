@@ -22,7 +22,7 @@ services:
     restart: always
     tty: true
     volumes:
-      - ./backend/app:/app/app
+      - ./backend:/app
     depends_on:
       - db
     env_file:
