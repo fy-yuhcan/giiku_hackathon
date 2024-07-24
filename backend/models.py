@@ -1,5 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, Float, String, Date, Time, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.mysql import TIMESTAMP as Timestamp
+from sqlalchemy.sql.functions import current_timestamp
 
 from database import Base
 
@@ -42,5 +44,5 @@ class Fridge(Base):
     id = Column(Integer, primary_Key=True)
     food_id = Column(Integer, ForeignKey("foods.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    added_at = Column(DateTime, nullable=False)
+    added_at = Column(Timestamp, server_default=current_timestamp())
     quantity = Column(Float, nullable=False)
