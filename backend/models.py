@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time, DateTime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, Float, String, Date, Time, DateTime
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -33,7 +33,7 @@ class RecipeFood(Base):
     id = Column(Integer, primary_Key=True)
     food_id = Column(Integer, ForeignKey("foods.id"), nullable=False)
     recipe_id = Column(Integer, ForeignKey("recipes.id"), nullable=False)
-    quantity = Column(Integer, nullable=False)
+    quantity = Column(Float, nullable=False)
     
 
 
@@ -43,4 +43,4 @@ class Fridge(Base):
     food_id = Column(Integer, ForeignKey("foods.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     added_at = Column(DateTime, nullable=False)
-    quantity = Column(Integer, nullable=False)
+    quantity = Column(Float, nullable=False)
