@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schemas import *
-from crud import *
+from ..schemas import FoodGetIn, FoodGetOut
+from ..crud import *
 
 router = APIRouter(
     prefix="food",
@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 #撮った写真から食べ物を検知し、結果を取得する
-@router.get("/")
-async def read_fridge(img_path: str):
+@router.get("/", response_model=FoodGetOut)
+async def read_food(image_path: str):
     #処理
-    return
+    return 
