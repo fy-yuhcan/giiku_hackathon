@@ -32,7 +32,7 @@ class RecipeFood(Base):
     __tablename__ = "recipe_foods"
     id = Column(Integer, primary_Key=True)
     food_id = Column(Integer, ForeignKey("foods.id"))
-    recipe_id = Column(Integer)
+    recipe_id = Column(Integer, ForeignKey("recipes.id"))
     quantity = Column(Integer)
     
 
