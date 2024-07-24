@@ -15,6 +15,9 @@ class User(Base):
     name = Column(String, nullable=False)
     password = Column(String, nullable=False)
 
+    recipes = relationship("Recipe", backref="user")
+    fridges = relationship("Fridge", backref="user")
+
 
 class Food(Base):
     __tablename__ = "foods"
@@ -22,12 +25,17 @@ class Food(Base):
     name = Column(String, nullable=False)
     unit = Column(String, nullable=False)
 
+    recipe_foods = relationship("RecipeFood", backref="food")
+    fridges = relationship("Fridge", backref="food")
+
 
 class Recipe(Base):
     __tablename__ = "recipes"
     id = Column(Integer, primary_Key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     text = Column(String, nullable=False)
+
+    recipe_foods = relationship("RecipeFood", backref="recipe")
 
 
 class RecipeFood(Base):
