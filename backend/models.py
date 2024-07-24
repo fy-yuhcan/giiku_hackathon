@@ -18,6 +18,7 @@ class Food(Base):
     __tablename__ = "foods"
     id = Column(Integer, primary_Key=True)
     name = Column(String)
+    unit = Column(String)
 
 
 class Recipe(Base):
@@ -32,6 +33,7 @@ class RecipeFood(Base):
     id = Column(Integer, primary_Key=True)
     food_id = Column(Integer, ForeignKey("foods.id"))
     recipe_id = Column(Integer)
+    quantity = Column(Integer)
     
 
 
