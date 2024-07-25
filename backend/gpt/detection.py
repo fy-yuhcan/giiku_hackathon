@@ -1,10 +1,11 @@
+from fastapi import UploadFile
 import base64
 import requests
 import openai
 
 openai.api_key = ""
 
-def encode_image(file):
+def encode_image(file: UploadFile):
   return base64.b64encode(file.file.read()).decode('utf-8')
 
 def detect_food(base64_image):
