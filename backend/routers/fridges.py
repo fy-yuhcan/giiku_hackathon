@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.schemas import FridgeGetOut, FridgePostIn, FridgePutIn
+from schemas import FridgeGetOut, FridgePostIn, FridgePutIn
 #from ..crud import 
 
 router = APIRouter(
