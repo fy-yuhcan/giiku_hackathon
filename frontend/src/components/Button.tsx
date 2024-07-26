@@ -4,10 +4,10 @@ import { PageContext, pageModeType } from '../context/pageContext';
 
 export default function Button({pageChangeTo, label, icon}) {
 
-  const [pageMode, setPageMode] = useContext<pageModeType>(PageContext)
+  const {pageMode, setPageMode} = useContext(PageContext)
 
   const handlepageChange = () => {
-    setPageMode((pageMode) => {pageMode => pageChangeTo})
+    setPageMode((pageMode) => pageChangeTo)
   }
     return (
       <>

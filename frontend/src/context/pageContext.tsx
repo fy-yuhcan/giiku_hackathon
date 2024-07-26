@@ -5,8 +5,13 @@ import { useState, createContext, ReactNode } from "react";
 
 
 export type pageModeType =  "addFoodByImage" | "addFoodByText" |"addFood"| "fridge"| "home" |"recipeDetailOne"| "RecipeSuggestion"
+export type pageContextType = {
+  pageMode: pageModeType;
+  setPageMode: (pageMode: pageModeType) => void;
+}
 
-export const PageContext = createContext("");
+
+export const PageContext = createContext<pageContextType>({pageMode: "home", setPageMode: (pageMode) => pageMode});
 
 
 export const PageModeProvider = ({children}) => {
