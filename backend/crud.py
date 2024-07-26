@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import *
 from fastapi import HTTPException
-#from models import 
+
 #from schemas import 
+from models import User, Food, Recipe, RecipeFood, Fridge
+
 
 # ここにデータベース操作を書く
 # コード増えそうだったらディレクトリ作ってファイル分けてもいいかも
