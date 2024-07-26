@@ -5,10 +5,10 @@ from typing import List, Literal, Union, Dict
 # ここで型定義
 # コード増えそうだったらディレクトリ作ってファイル分けてもいいかも
 
-class Food(BaseModel):
-    food_id: List[int]
-    name: str
-    quantity: List[int]
+# class Food(BaseModel):
+#     food_id: List[int]
+#     name: str
+#     quantity: List[int]
 
 
 class FridgeBase(BaseModel):
@@ -46,7 +46,11 @@ class RecipePostOut(RecipeModel):
 
 
 class FoodBase(BaseModel):
-    pass
+    name: str
+    unit: str
+
+class Food(FoodBase):
+    id: int
 
 class FoodGetOut(FoodBase):
     foods: List[Food]
