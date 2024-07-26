@@ -17,10 +17,12 @@ async def add_food_to_fridge(session: AsyncSession, user_id: int, food_id: int, 
 # user_idから冷蔵庫のすべての食材を取得（foodとjoin）
 async def get_fridge_contents(session: AsyncSession, user_id: int):
     query = text(
-        "SELECT fridges.id, foods.name, fridges.quantity, fridges.added_at " +
+        "SELECT " + 
+        "foods.id, foods.name, SUM(fridges.quantity) " +
         "FROM fridges " +
-        "JOIN foods ON fridges.food_id = foods.id " +
-        "WHERE fridges.user_id = :user_id"
+        "LEFT JOIN foods ON fridges.food_id = foods.id " +
+        "WHERE fridges.user_id = :user_id " +
+        "GROUP BY fridges.food_id"
     )
     result = await session.execute(query, {"user_id": user_id})
     fridge_contents = result.fetchall()
