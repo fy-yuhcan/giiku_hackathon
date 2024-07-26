@@ -1,6 +1,37 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import *
+from sqlalchemy.sql.expression import text
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
-
-#from schemas import 
 from ..models import User, Food, Recipe, RecipeFood, Fridge
+from ..schemas import FridgeSchema, FoodSchema, RecipeSchema
+
+# 冷蔵庫に食材を追加
+async def add_food_to_fridge(session: AsyncSession, user_id: int, food_id: int, quantity: float):
+    query = text(
+        "INSERT INTO fridges (user_id, food_id, quantity, added_at) " +
+        "VALUES (:user_id, :food_id, :quantity, current_timestamp)"
+    )
+    await session.execute(query, {"user_id": user_id, "food_id": food_id, "quantity": quantity})
+    await session.commit()
+
+# user_idから冷蔵庫のすべての食材を取得（foodとjoin）
+async def get_fridge_contents(session: AsyncSession, user_id: int):
+    query = text(
+        "SELECT fridges.id, foods.name, fridges.quantity, fridges.added_at " +
+        "FROM fridges " +
+        "JOIN foods ON fridges.food_id = foods.id " +
+        "WHERE fridges.user_id = :user_id"
+    )
+    result = await session.execute(query, {"user_id": user_id})
+    fridge_contents = result.fetchall()
+    return fridge_contents
+
+# 冷蔵庫の特定の食材を削除
+async def remove_food_from_fridge(session: AsyncSession, fridge_id: int):
+    query = text(
+        "DELETE FROM fridges " +
+        "WHERE id = :fridge_id"
+    )
+    await session.execute(query, {"fridge_id": fridge_id})
+    await session.commit()
+
