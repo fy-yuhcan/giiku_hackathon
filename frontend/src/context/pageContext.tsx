@@ -4,7 +4,7 @@ import React from 'react';
 import { useState, createContext, ReactNode } from "react";
 
 
-export type pageModeType =  "addFoodByImage" | "addFoodByText" |"addFood"| "fridge"| "home" |"recipeDetailOne"| "RecipeSuggestion"
+export type pageModeType =  "addFoodByImage" | "addFoodByText" |"addFood"| "fridge"| "home" |"recipeDetailOne"| "recipeSuggestion"
 export type pageContextType = {
   pageMode: pageModeType;
   setPageMode: (pageMode: pageModeType) => void;
