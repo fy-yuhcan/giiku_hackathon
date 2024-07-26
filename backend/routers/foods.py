@@ -5,7 +5,7 @@ from ..crud import *
 from ..gpt.detection import encode_image, detect_food
 
 router = APIRouter(
-    prefix="food",
+    prefix="/food",
 )
 
 # ここでルーター定義
