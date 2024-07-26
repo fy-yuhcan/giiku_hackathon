@@ -33,7 +33,8 @@ class Recipe(Base):
     __tablename__ = "recipes"
     id = Column(Integer, primary_Key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    text = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
 
     recipe_foods = relationship("RecipeFood", backref="recipe")
 
