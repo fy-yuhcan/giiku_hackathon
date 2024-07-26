@@ -2,12 +2,10 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
 
-from database import SessionLocal, engine
-#from .api.main import router
-from backend.routers.fridges import router
-from crud import *
-from models import *
-from schemas import *
+#from database import SessionLocal, engine
+#from .crud import 
+#from .models import 
+#from .schemas import 
 from routers import foods, fridges, recipes
 
 #models.Base.metadata.create_all(bind=engine)

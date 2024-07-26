@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..schemas import FoodGetIn, FoodGetOut
-from ..crud import *
+from schemas import FoodGetOut
+#from ..crud import 
 
 router = APIRouter(
-    prefix="food",
+    prefix="/food",
 )
 
 # ここでルーター定義
