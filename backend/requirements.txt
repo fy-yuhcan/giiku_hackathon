@@ -6,3 +6,5 @@ psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 pydantic==2.8.2
 alembic==1.13.2
+pytest==8.3.2
+alembic==1.13.2
