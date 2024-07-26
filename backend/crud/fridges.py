@@ -17,14 +17,32 @@ async def add_food_to_fridge(session: AsyncSession, user_id: int, food_id: int, 
 # user_idから冷蔵庫のすべての食材を取得（foodとjoin）
 async def get_fridge_contents(session: AsyncSession, user_id: int):
     query = text(
-        "SELECT fridges.id, foods.name, fridges.quantity, fridges.added_at " +
+        "SELECT " + 
+        "foods.id, foods.name, foods.unit " +
+        "SUM(fridges.quantity), MIN(fridges.added_at) " +
         "FROM fridges " +
-        "JOIN foods ON fridges.food_id = foods.id " +
-        "WHERE fridges.user_id = :user_id"
+        "LEFT JOIN foods ON fridges.food_id = foods.id " +
+        "WHERE fridges.user_id = :user_id " +
+        "GROUP BY fridges.food_id"
     )
     result = await session.execute(query, {"user_id": user_id})
     fridge_contents = result.fetchall()
     return fridge_contents
+
+# 冷蔵庫の食材の詳細（それぞれの買った日、残っている量）を取得
+async def get_fridge_foods(session: AsyncSession, user_id: int, food_id: int):
+    query = text(
+        "SELECT " +
+        "foods.id, foods.name, foods.unit, fridges.added_at, fridges.quantity " +
+        "FROM fridges " +
+        "LEFT JOIN foods ON fridges.food_id = foods.id " +
+        "WHERE fridges.user_id = :user_id " +
+        "AND fridges.food_id = :food_id " +
+        "ORDER BY fridges.added_at"
+    )
+    result = await session.execute(query, {"user_id": user_id, "food_id": food_id})
+    fridge_foods = result.fetchall()
+    return fridge_foods
 
 # 冷蔵庫の特定の食材を削除
 async def remove_food_from_fridge(session: AsyncSession, fridge_id: int):
