@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..schemas import RecipeGetOut, RecipePostOut, RecipePostIn
-from ..crud import *
+from backend.schemas import RecipeGetOut, RecipePostOut, RecipePostIn
+#from ..crud import 
 
 router = APIRouter(
-    prefix="recipe"
+    prefix="/recipe"
 )
 
 # ここでルーター定義
