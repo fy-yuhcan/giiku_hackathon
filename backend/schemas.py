@@ -16,6 +16,19 @@ class FoodModel(FoodBase):
 class FoodGetOut(FoodBase):
     foods: List[FoodModel]
 
+# RecipeFoods (RecipesとFoodsの中間テーブル) 関連のスキーマ
+
+class RecipeFoodBase(BaseModel):
+    food_id: int
+    recipe_id: int
+    quantity: float
+
+class RecipeFoodCreate(RecipeFoodBase):
+    pass
+
+class RecipeFoodModel(RecipeFoodBase):
+    id: int
+
 class FoodInRecipe(BaseModel):
     food_id: int
     name: str
