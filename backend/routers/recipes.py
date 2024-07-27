@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 # 過去にChatGPTに提案してもらったレシピを表示
-@router.get("/", response_model=RecipeGetOut)
+@router.get("/", response_model=list[RecipeModel])
 async def get_recipes_router(user_id: int, session: AsyncSession = Depends(get_session)):
     try:
         return await get_recipes(session, user_id)
