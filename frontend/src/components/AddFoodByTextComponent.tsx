@@ -6,8 +6,6 @@ import { PageContext, pageModeType } from '../context/pageContext';
 
 export default function AddFoodByTextComponent() {
     const addFoodByImage: pageModeType = "addFoodByImage";
-
-
     return (
       <>
         <FoodHandler/>

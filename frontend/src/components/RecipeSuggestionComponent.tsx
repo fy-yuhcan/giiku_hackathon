@@ -6,6 +6,7 @@ import SmallButton from './SmallButton';
 import { PageContext, pageModeType } from '../context/pageContext';
 import { UserContext } from '../context/userContext';
 
+
 export default function RecipeSuggestionComponent() {
 
     let content: string = ""
