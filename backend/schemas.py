@@ -45,12 +45,12 @@ class RecipePostOut(RecipeModel):
     text: Union[str, None] = None
 
 
-class FoodBase(BaseModel):
+class FoodCreate(BaseModel):
     name: str
     unit: str
 
-class Food(FoodBase):
+class FoodModel(FoodCreate):
     id: int
 
-class FoodGetOut(FoodBase):
-    foods: List[Food]
+# class FoodGetOut(FoodBase):
+#     foods: List[Food]
