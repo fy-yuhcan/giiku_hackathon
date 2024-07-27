@@ -3,34 +3,27 @@ import base64
 import requests
 import openai
 import os
-import csv
-import json  # インポート追加
+import json
+from sqlalchemy.ext.asyncio import AsyncSession
+from crud.foods import get_foods
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-def load_food_data(file_path):
-    food_data = {}
-    with open(file_path, mode='r', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        next(reader)  # ヘッダーをスキップ
-        for i, row in enumerate(reader, start=1):
-            food_data[row[0]] = {"id": i, "unit": row[1]}
-    return food_data
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-csv_file_path = os.path.join(script_dir, '../data/seed_foods_data.csv')
-food_data = load_food_data(csv_file_path)
+async def load_food_data(session: AsyncSession):
+    foods = await get_foods(session)
+    return {food.name: {"id": food.id, "unit": food.unit} for food in foods}
 
 def encode_image(file: UploadFile):
     file.file.seek(0)  # ファイルの先頭に戻る
     return base64.b64encode(file.file.read()).decode('utf-8')
 
-def detect_food(base64_image):
+def detect_food(base64_image, session: AsyncSession):
     prompt_message = """
     これらの画像に何の食材がそれぞれ何個またはどのくらいの量写っているかJSONのリストで出力してください。
     答えだけを出力してください。
     食材の名前は日本語にしてください。
     JSONのvalueは数値のみで、単位は別のKEYのValueとして持つようにしてください。
+
     例：
     [
         {
@@ -105,6 +98,10 @@ def detect_food(base64_image):
     detected_foods = detected_foods.strip("```json\n").strip("\n```")
     detected_foods = json.loads(detected_foods)
 
+    # 食材データを取得
+    food_data = asyncio.run(load_food_data(session))
+
+    # 食材情報にIDと単位を追加
     for item in detected_foods:
         food_name = item["name"]
         if food_name in food_data:
@@ -112,4 +109,6 @@ def detect_food(base64_image):
             item["unit"] = food_data[food_name]["unit"]
 
     return detected_foods
+
+
 
