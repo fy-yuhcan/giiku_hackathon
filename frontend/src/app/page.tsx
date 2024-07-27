@@ -24,7 +24,7 @@ const Home = () => {
       <PageModeProvider>
         <div className="min-h-screen bg-yellow-100 flex flex-col justify-between">
           <Header />
-            <main className="flex flex-col items-center mt-10">
+            <main className="flex-grow flex flex-col items-center">
               <CenterComponent/>
             </main>
         </div>
