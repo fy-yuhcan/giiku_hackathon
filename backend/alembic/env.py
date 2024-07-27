@@ -5,9 +5,7 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from alembic import context
 import asyncio
-from models import Base
-from database import Engine
-
+from database import Base, SQLALCHEMY_DATABASE_URL
 import sys
 import os
 
@@ -44,7 +42,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    # url = config.get_main_option("sqlalchemy.url")
+    url = SQLALCHEMY_DATABASE_URL
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -57,11 +56,12 @@ def run_migrations_offline() -> None:
 
 async def run_async_migrations():
     connectable = create_async_engine(
-        config.get_main_option("sqlalchemy.url"),
+        # config.get_main_option("sqlalchemy.url"),
+        SQLALCHEMY_DATABASE_URL,
         future = True,
         poolclass = pool.NullPool,
     )
-    async with connectable.connct() as conncection:
+    async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
 
 def do_run_migrations(connection):
