@@ -19,9 +19,22 @@ async def create_recipe(user_id: int, num_recipe: int = 10):
 
 #ChatGPTにレシピの提案をしてもらう
 @router.post("/", response_model=RecipePostOut)
-async def update_recipe(recipe: RecipePostIn):
-    
-    return 
+async def create_recipe(recipe: RecipePostIn, session: AsyncSession = Depends(get_session)):
+    try:
+        # 食材リストを作成
+        ingredients = recipe.query
+
+        # ChatGPTにレシピ提案をリクエストする
+        suggestion = await generate_recipe(ingredients)
+
+        # レシピをデータベースに保存する処理
+        db_recipe = await add_recipe(session, recipe)
+
+        # レスポンスの生成
+        return RecipePostOut(id=db_recipe.id, title=db_recipe.title, foods=db_recipe.foods, content=suggestion["content"])
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 #いらないレシピを削除
 @router.delete("/")
