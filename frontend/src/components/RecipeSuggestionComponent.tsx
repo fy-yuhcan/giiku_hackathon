@@ -4,6 +4,7 @@ import RecipeButton from './RecipeButton';
 import RecipeWindow from './RecipeWindow';
 import SmallButton from './SmallButton';
 import { PageContext, pageModeType } from '../context/pageContext';
+import { UserContext } from '../context/userContext';
 
 export default function RecipeSuggestionComponent() {
 
@@ -37,6 +38,7 @@ export default function RecipeSuggestionComponent() {
 
     const recipeSuggestion: pageModeType = "recipeSuggestion"
     const {pageMode, setPageMode} = useContext(PageContext)
+    const {user, setUser} = useContext(UserContext)
     
     const handleBack = () => {
       setPageMode(recipeSuggestion)

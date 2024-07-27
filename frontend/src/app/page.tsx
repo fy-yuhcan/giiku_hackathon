@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import RecipeSuggestion from '../components/RecipeSuggestion';
 import { PageModeProvider } from '../context/pageContext';
 import CenterComponent from '../components/CenterComponent';
+import { UserProvider } from '../context/userContext';
 
 
 const Home = () => {
@@ -17,6 +18,7 @@ const Home = () => {
   //const [pageMode, setPageMode] = useState("home")
   return (
     <div>
+      <UserProvider>
       <PageModeProvider>
         <div className="min-h-screen bg-yellow-100 flex flex-col justify-between">
           <Header />
@@ -25,6 +27,7 @@ const Home = () => {
             </main>
         </div>
       </PageModeProvider>
+      </UserProvider>
     </div>
   );
 };

@@ -3,7 +3,9 @@
 import React, { useContext, useState } from 'react';
 import SmallButton from './SmallButton';
 import { PageContext, pageModeType } from '../context/pageContext';
-import internal from 'stream';
+import useSWRMutation from 'swr/mutation';
+import { UserContext } from '../context/userContext';
+
 
 export type ingredientsType = {
   name: string,
@@ -39,16 +41,30 @@ export default function FoodHandler() {
     setPageMode(fridgePage)
   }
 
-  const fetcher = (url:string, method:string, body:{
-    
-  }) => {
-    fetch(url, { 
-      method: method,
-      body: body
+  
+  type foodsType = {
+    food_id: number,
+    quantity: number
+  }
+
+  //冷蔵庫に保存するフェッチ
+  const {user, setUser} = useContext(UserContext)
+  async function updateFridge(url:string, { arg }: {arg: {user_id: number, foods: foodsType[]}}) {
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: arg.user_id,
+        foods: arg.foods
+      })
     })
     .then(res => res.json())
   }
-  const handleSubmit = (event) => {
+  const { trigger, isMutating } = useSWRMutation("/fridge", updateFridge)
+  
+  const handleSubmit = async (event) => {
+    await trigger({user_id: user.user_id, foods: 
+      ingredients.map(ingredient => {return {food_id: 0, quantity: ingredient.quantity}})
+    })
     handlePageChange()
   };
 
