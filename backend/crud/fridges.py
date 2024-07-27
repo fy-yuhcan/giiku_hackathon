@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
-from ..models import User, Food, Recipe, RecipeFood, Fridge
-from ..schemas import FridgeSchema, FoodSchema, RecipeSchema
+from models import User, Food, Recipe, RecipeFood, Fridge
+# from schemas import FridgeSchema, FoodSchema, RecipeSchema
 
 # 冷蔵庫に食材を追加
 async def add_food_to_fridge(session: AsyncSession, user_id: int, food_id: int, quantity: float):
