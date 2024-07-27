@@ -21,7 +21,7 @@ async def get_recipes_router(user_id: int, num_recipe: int = 10, session: AsyncS
         raise HTTPException(status_code=500, detail=str(e))
 
 # ChatGPTにレシピの提案をしてもらう
-@router.post("/", response_model=None)      # あとでスキーマ定義する！
+@router.post("/", response_model=RecipePostOut)
 async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSession = Depends(get_session)):
     try:
         user_id = recipe_request.user_id
