@@ -15,9 +15,9 @@ export default function Header() {
   const handleToFridge = () => {
     setPageMode(fridge)
   }
-  
+
   return (
-    <header className="bg-yellow-300 p-4">
+    <header className="flex-shrink-0 bg-yellow-300 p-4">
       <div className="flex items-center justify-between">
         <div onClick={handleToHome}>
           <h1 className="text-3xl font-bold text-orange-500">食マネ</h1>
