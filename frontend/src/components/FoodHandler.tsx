@@ -8,17 +8,28 @@ import { UserContext } from '../context/userContext';
 import BackButton from './BackButton'; // BackButtonコンポーネントをインポート
 import { FoodDataType } from '../materialType';
 
+// RemoveButton component
+function RemoveButton({ onClick }) {
+  return (
+    <button
+      type="button"
+      className="bg-white-500 text-red rounded-full p-1"
+      onClick={onClick}
+    >
+      ⊖
+    </button>
+  );
+}
 
-
-export default function FoodHandler({FoodData}) {
+export default function FoodHandler({ FoodData }) {
   const [ingredients, setIngredients] = useState<FoodDataType[]>(FoodData);
 
-  //食材の追加
+  // 食材の追加
   const handleAddIngredient = () => {
-    setIngredients([...ingredients, {food_id: 0, name: '', quantity: 0, unit: 'g' }]);
+    setIngredients([...ingredients, { food_id: 0, name: '', quantity: 0, unit: 'g' }]);
   };
 
-  //すでにある食材の変更
+  // すでにある食材の変更
   const handleChange = (index: number, field: string, value: string | number) => {
     const newIngredients = [...ingredients];
     if (field === "quantity") {
@@ -29,7 +40,13 @@ export default function FoodHandler({FoodData}) {
     setIngredients(newIngredients);
   };
 
-  //保存 & 冷蔵庫ページに移動
+  // 食材の削除
+  const handleRemoveIngredient = (index: number) => {
+    const newIngredients = ingredients.filter((_, i) => i !== index);
+    setIngredients(newIngredients);
+  };
+
+  // 保存 & 冷蔵庫ページに移動
   const fridgePage: pageModeType = "fridge";
   const home: pageModeType = "home"; // 遷移先のパスを指定
   const { setPageMode } = useContext(PageContext);
@@ -38,41 +55,39 @@ export default function FoodHandler({FoodData}) {
     setPageMode(fridgePage);
   }
 
-
-    //冷蔵庫に保存するフェッチ
-
+  // 冷蔵庫に保存するフェッチ
   type foodsType = {
     food_id: number,
     quantity: number
   }
 
-  //冷蔵庫に保存するフェッチ
-  const {user, setUser} = useContext(UserContext)
-  async function updateFridge(url:string, { arg }: {arg: {
+  // 冷蔵庫に保存するフェッチ
+  const { user, setUser } = useContext(UserContext)
+  async function updateFridge(url: string, { arg }: {
+    arg: {
       user_id: number,
       foods: {
-          food_id: number,
-          quantity: number
+        food_id: number,
+        quantity: number
       }[]
-  }}) {
+    }
+  }) {
     fetch(url, {
       method: "POST",
       body: JSON.stringify(arg)
     })
-    .then(res => res.json());
+      .then(res => res.json());
   }
 
-
   const { trigger, isMutating } = useSWRMutation("/storage/", updateFridge)
-  
+
   const handleSubmit = async () => {
-    await trigger({user_id: user.user_id, foods: 
-      ingredients.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})
+    await trigger({
+      user_id: user.user_id, foods:
+        ingredients.map(ingredient => { return { food_id: ingredient.food_id, quantity: ingredient.quantity } })
     })
     handlePageChange()
   };
-
-
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-3/4 max-w-lg mx-auto mt-10">
@@ -80,54 +95,58 @@ export default function FoodHandler({FoodData}) {
         <BackButton pageChangeTo={home} /> {/* 戻るボタンを追加 */}
       </div>
       <h2 className="text-2xl font-bold text-center mb-4">新しく追加する食材</h2>
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <label className="col-span-1 text-right">食材名</label>
-          <label className="col-span-1 text-right">数</label>
-          <label className="col-span-1 text-right">単位</label>
-          {ingredients.map((ingredient, index) => (
-            <React.Fragment key={index}>
-              <input
-                type="text"
-                className="border rounded p-2 col-span-1"
-                placeholder="食材名"
-                value={ingredient.name}
-                onChange={(e) => handleChange(index, 'name', e.target.value)}
-              />
-              <input
-                type="number"
-                className="border rounded p-2 col-span-1"
-                placeholder="数"
-                value={ingredient.quantity}
-                onChange={(e) => handleChange(index, 'quantity', e.target.value)}
-              />
-              <select
-                className="border rounded p-2 col-span-1"
-                value={ingredient.unit}
-                onChange={(e) => handleChange(index, 'unit', e.target.value)}
-              >
-                <option value="個">個</option>
-                <option value="g">g</option>
-                <option value="kg">kg</option>
-                <option value="ml">ml</option>
-                <option value="l">l</option>
-                <option value="本">本</option>
-                <option value="袋">袋</option>
-              </select>
-            </React.Fragment>
-          ))}
-        </div>
-        <div className="text-center mb-4">
-          <button
-            type="button"
-            className="bg-gray-200 border border-gray-300 rounded p-2"
-            onClick={handleAddIngredient}
-          >
-            追加
-          </button>
-        </div>
-        <div className="text-center">
-          <SmallButton handler={handleSubmit} label={"保存"} />
-        </div>
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        <label className="col-span-1 text-center">削除</label>
+        <label className="col-span-1 text-center">食材名</label>
+        <label className="col-span-1 text-center">数</label>
+        <label className="col-span-1 text-center">単位</label>
+        {ingredients.map((ingredient, index) => (
+          <React.Fragment key={index}>
+            <div className="flex justify-center items-center">
+              <RemoveButton onClick={() => handleRemoveIngredient(index)} />
+            </div>
+            <input
+              type="text"
+              className="border rounded p-2 col-span-1"
+              placeholder="食材名"
+              value={ingredient.name}
+              onChange={(e) => handleChange(index, 'name', e.target.value)}
+            />
+            <input
+              type="number"
+              className="border rounded p-2 col-span-1"
+              placeholder="数"
+              value={ingredient.quantity}
+              onChange={(e) => handleChange(index, 'quantity', e.target.value)}
+            />
+            <select
+              className="border rounded p-2 col-span-1"
+              value={ingredient.unit}
+              onChange={(e) => handleChange(index, 'unit', e.target.value)}
+            >
+              <option value="個">個</option>
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+              <option value="ml">ml</option>
+              <option value="l">l</option>
+              <option value="本">本</option>
+              <option value="袋">袋</option>
+            </select>
+          </React.Fragment>
+        ))}
+      </div>
+      <div className="text-center mb-4">
+        <button
+          type="button"
+          className="bg-gray-200 border border-gray-300 rounded p-2"
+          onClick={handleAddIngredient}
+        >
+          追加
+        </button>
+      </div>
+      <div className="text-center">
+        <SmallButton handler={handleSubmit} label={"保存"} />
+      </div>
     </div>
   );
 }
