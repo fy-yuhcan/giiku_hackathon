@@ -12,3 +12,4 @@ openai==1.37.1
 asyncpg==0.29.0
 requests==2.31.0
 aiohttp
+passlib[bcrypt]

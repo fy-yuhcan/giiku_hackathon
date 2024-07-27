@@ -73,3 +73,21 @@ class FoodModel(FoodBase):
 
 class FoodGetOut(FoodBase):
     foods: List[FoodModel]
+
+# userのスキーマ(?)違ったら変更してください
+class UserBase(BaseModel):
+    name: str
+
+class User(UserBase):
+    id: int
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str | None = None
