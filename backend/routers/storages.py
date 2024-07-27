@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from database import get_session
 from schemas import StorageGetOut, StoragePostIn, StoragePutIn
-from crud.storages import add_storage, get_storage, get_storage_by_food, remove_storage, update_storage
+from crud.storages import add_storage, get_storage, get_storage_by_food, delete_storage, update_storage
 
 router = APIRouter(
     prefix="/storage"
@@ -32,9 +32,9 @@ async def add_storage_router(user_id: int, food_id: int, quantity: float, sessio
     return {"message": "Food added to storage"}
 
 
-# 冷蔵庫の削除を更新
-@router.put("/{storage_id}", response_model=None)
-async def update_storage_router(storage_id: int, quantity: float, session: AsyncSession = Depends(get_session)):
+# 冷蔵庫の中身を更新（減らす）
+@router.put("/{user_id}", response_model=None)
+async def update_storage_router(user_id: int, food_id: int, quantity: float, session: AsyncSession = Depends(get_session)):
     # 計算して、削除と更新のDB操作をする
     return {"message": "Storage updated"}
 
