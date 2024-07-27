@@ -122,6 +122,9 @@ class RecipeSuggestion(BaseModel):
 class RecipePostOut(RecipeSuggestion):
     id: int
 
+class RecipePutIn(BaseModel):
+    user_id: int
+    recipe_id: int
 
 # userのスキーマ(?)違ったら変更してください
 class UserBase(BaseModel):
