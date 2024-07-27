@@ -3,23 +3,17 @@ import base64
 import requests
 import openai
 import os
+import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from crud.foods import get_foods
-import json
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-async def load_food_data(session: AsyncSession):
-    foods = await get_foods(session)
-    return {food.name: {"id": food.id, "unit": food.unit} for food in foods}
-
-def encode_image(file):
-    file.seek(0)  # ファイルの先頭に戻る
-    return base64.b64encode(file.read()).decode('utf-8')
+def encode_image(file: UploadFile):
+    file.file.seek(0)  # ファイルの先頭に戻る
+    return base64.b64encode(file.file.read()).decode('utf-8')
 
 async def detect_food(base64_image, session: AsyncSession):
-    food_data = await load_food_data(session)
-
     prompt_message = """
     これらの画像に何の食材がそれぞれ何個またはどのくらいの量写っているかJSONのリストで出力してください。
     答えだけを出力してください。
@@ -75,7 +69,18 @@ async def detect_food(base64_image, session: AsyncSession):
         "messages": [
             {
                 "role": "user",
-                "content": prompt_message
+                "content": [
+                    {
+                        "type": "text",
+                        "text": prompt_message
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
             }
         ],
         "max_tokens": 300
@@ -88,6 +93,10 @@ async def detect_food(base64_image, session: AsyncSession):
     detected_foods = detected_foods.strip("```json\n").strip("\n```")
     detected_foods = json.loads(detected_foods)
 
+    # 全件取得した食品データを参照してIDを割り振る
+    foods = await get_foods(session)
+    food_data = {food.name: {"id": food.id, "unit": food.unit} for food in foods}
+
     for item in detected_foods:
         food_name = item["name"]
         if food_name in food_data:
@@ -95,6 +104,7 @@ async def detect_food(base64_image, session: AsyncSession):
             item["unit"] = food_data[food_name]["unit"]
 
     return detected_foods
+
 
 
 

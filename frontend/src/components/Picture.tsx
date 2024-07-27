@@ -2,24 +2,21 @@ import React, { useState, useRef } from 'react';
 import useSWRMutation from 'swr/mutation';
 import { FoodDataType } from '../materialType';
 
-export default function Picture({setFoodData}) {
-
+export default function Picture({ setFoodData }) {
   const DetectionFoodImagePath = "/images/";
 
   async function uploadImage(url: string, { arg }) {
     const formData = new FormData();
     formData.append('upload_file', arg.file);
-    //写真をバックエンドに保存するapiにアクセス
-    fetch(url, {
+    const response = await fetch(url, {
       method: "POST",
       body: formData,
-    })
-      .then(res => res.json());
+    });
+    return response.json();
   }
 
-
   const handleChangeFoodData = (newFoodData: FoodDataType[]) => {
-    setFoodData(newFoodData)
+    setFoodData(newFoodData);
   }
 
   const { trigger, data, error } = useSWRMutation(DetectionFoodImagePath, uploadImage);
@@ -34,11 +31,11 @@ export default function Picture({setFoodData}) {
       setPreviewSrc(URL.createObjectURL(file));
       try {
         const result = await trigger({ file });
+        if (result) {
+          handleChangeFoodData(result.result);
+        }
       } catch (e) {
         console.log(e);
-      }
-      if (data) {
-        handleChangeFoodData(data)
       }
     }
   };
@@ -49,7 +46,14 @@ export default function Picture({setFoodData}) {
     if (file) {
       setPreviewSrc(URL.createObjectURL(file));
       fileInputRef.current.files = event.dataTransfer.files;
-      await trigger({ file });
+      try {
+        const result = await trigger({ file });
+        if (result) {
+          handleChangeFoodData(result.result);
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -75,3 +79,4 @@ export default function Picture({setFoodData}) {
     </div>
   );
 }
+
