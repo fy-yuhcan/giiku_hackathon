@@ -2,6 +2,23 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Literal, Union, Dict
 
+# Food関連の定義
+class FoodBase(BaseModel):
+    name: str
+    unit: str
+
+class FoodCreate(FoodBase):
+    pass
+
+class FoodModel(FoodBase):
+    id: int
+
+class FoodGetOut(FoodBase):
+    foods: List[FoodModel]
+
+class FoodInRecipe(FoodModel):
+    quantity: int
+
 # Storageベースクラス
 class StorageBase(BaseModel):
     food_id: int
@@ -79,22 +96,6 @@ class RecipeSuggestion(BaseModel):
 class RecipePostOut(RecipeModel):
     text: Union[str, None] = None
 
-# Food関連の定義
-class FoodBase(BaseModel):
-    name: str
-    unit: str
-
-class FoodCreate(FoodBase):
-    pass
-
-class FoodModel(FoodBase):
-    id: int
-
-class FoodGetOut(FoodBase):
-    foods: List[FoodModel]
-
-class FoodInRecipe(FoodModel):
-    quantity: int
 
 # userのスキーマ(?)違ったら変更してください
 class UserBase(BaseModel):
