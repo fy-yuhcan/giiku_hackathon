@@ -3,7 +3,7 @@ from sqlalchemy.sql.expression import *
 from fastapi import HTTPException
 
 #from schemas import 
-from models import User, Food, Recipe, RecipeFood, Fridge
+from models import User, Food, Recipe, RecipeFood, Storage
 
 
 # ここにデータベース操作を書く

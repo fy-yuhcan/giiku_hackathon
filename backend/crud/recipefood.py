@@ -5,7 +5,7 @@ from sqlalchemy import text
 from fastapi import HTTPException
 
 #from schemas import 
-from ..models import User, Food, Recipe, RecipeFood, Fridge
+from ..models import User, Food, Recipe, RecipeFood, Storage
 
 # レシピに一つの食材を追加
 async def add_recipe_foods(session: AsyncSession, food_id: int, recipe_id: int, quantity: int):
