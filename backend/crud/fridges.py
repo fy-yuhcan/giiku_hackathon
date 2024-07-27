@@ -55,3 +55,13 @@ async def remove_food_from_fridge(session: AsyncSession, fridge_id: int):
     await session.execute(query, {"fridge_id": fridge_id})
     await session.commit()
 
+# 冷蔵庫の食材の量を更新（減らす）
+async def update_food_in_fridge(session: AsyncSession, fridge_id: int, quantity: float):
+    query = text(
+        "UPDATE fridges " +
+        "SET quantity = :quantity " +
+        "WHERE id = :fridge_id"
+    )
+    await session.exeute(query, {"fridge_id": fridge_id, "quantity": quantity})
+    await session.commit()
+
