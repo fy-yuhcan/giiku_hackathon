@@ -4,7 +4,7 @@ import { FoodDataType } from '../materialType';
 
 export default function Picture({setFoodData}) {
 
-  const DetectionFoodImagePath = "/storage/img/";
+  const DetectionFoodImagePath = "/images/";
 
   async function uploadImage(url: string, { arg }) {
     const formData = new FormData();
@@ -22,7 +22,7 @@ export default function Picture({setFoodData}) {
     setFoodData(newFoodData)
   }
 
-  const { trigger, data, error } = useSWRMutation("/fridge", uploadImage);
+  const { trigger, data, error } = useSWRMutation(DetectionFoodImagePath, uploadImage);
 
   const [previewSrc, setPreviewSrc] = useState(null);
   const fileInputRef = useRef(null);
