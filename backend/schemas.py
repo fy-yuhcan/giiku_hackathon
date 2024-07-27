@@ -93,6 +93,9 @@ class FoodModel(FoodBase):
 class FoodGetOut(FoodBase):
     foods: List[FoodModel]
 
+class FoodInRecipe(FoodModel):
+    quantity: int
+
 # userのスキーマ(?)違ったら変更してください
 class UserBase(BaseModel):
     name: str
