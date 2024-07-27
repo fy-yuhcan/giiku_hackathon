@@ -1,31 +1,62 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import SmallButton from './SmallButton';
+import { PageContext, pageModeType } from '../context/pageContext';
+import internal from 'stream';
+
+export type ingredientsType = {
+  name: string,
+  quantity: number,
+  unit: "個" | "g" | "kg" | "ml" | "l" | "本" | "袋"
+}
 
 export default function FoodHandler() {
-  const [ingredients, setIngredients] = useState([
-    { name: '', quantity: '', unit: 'g' },
+  const [ingredients, setIngredients] = useState<ingredientsType[]>([
+    { name: '', quantity: 0, unit: 'g' },
   ]);
 
+  //食材の追加
   const handleAddIngredient = () => {
-    setIngredients([...ingredients, { name: '', quantity: '', unit: 'g' }]);
+    setIngredients([...ingredients, { name: '', quantity: 0, unit: 'g' }]);
   };
 
-  const handleChange = (index, field, value) => {
+  //すでにある食材の変更
+  const handleChange = (index: number, field: string, value: string|number) => {
     const newIngredients = [...ingredients];
-    newIngredients[index][field] = value;
+    if (value === "quantity") {
+      newIngredients[index][field] = parseFloat(value);
+    } else {
+      newIngredients[index][field] = value;
+    }
     setIngredients(newIngredients);
   };
 
+  //保存 & 冷蔵庫ページに移動
+  const fridgePage: pageModeType = "fridge"
+  const {pageMode, setPageMode} = useContext(PageContext)
+  const handlePageChange = () => {
+    setPageMode(fridgePage)
+  }
+
+  const fetcher = (url:string, method:string, body:{
+    
+  }) => {
+    fetch(url, { 
+      method: method,
+      body: body
+    })
+    .then(res => res.json())
+  }
   const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log('保存する食材:', ingredients);
+    handlePageChange()
   };
+
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-3/4 max-w-lg mx-auto mt-10">
       <h2 className="text-2xl font-bold text-center mb-4">新しく追加する食材</h2>
-      <form onSubmit={handleSubmit}>
+      <form>
         <div className="grid grid-cols-3 gap-4 mb-4">
           <label className="col-span-1 text-right">食材名</label>
           <label className="col-span-1 text-right">数</label>
@@ -72,9 +103,7 @@ export default function FoodHandler() {
           </button>
         </div>
         <div className="text-center">
-          <button type="submit" className="bg-orange-500 text-white py-2 px-4 rounded">
-            保存
-          </button>
+          <SmallButton handler={handleSubmit} label={"保存"}/>
         </div>
       </form>
     </div>
