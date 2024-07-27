@@ -19,7 +19,8 @@ async def get_fridge_contents(session: AsyncSession, user_id: int):
     query = text(
         "SELECT " + 
         "foods.id, foods.name, foods.unit " +
-        "SUM(fridges.quantity), MIN(fridges.added_at) " +
+        "SUM(fridges.quantity) AS total_quantity, " + 
+        "MIN(fridges.added_at) AS oldest_added_at " +
         "FROM fridges " +
         "LEFT JOIN foods ON fridges.food_id = foods.id " +
         "WHERE fridges.user_id = :user_id " +
