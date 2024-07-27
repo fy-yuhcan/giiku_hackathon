@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_session
 from schemas import StorageWithFoodInfo, FoodInStorage, StorageCreate, StorageUpdate, StoragePost, FoodInStoragePost
-from crud.storages import add_storages, get_storage_summary, get_storage_by_food, delete_storage, update_storage
+from crud.storages import add_storages, add_storage, get_storage_summary, get_storage_by_food, delete_storage, update_storage
 
 router = APIRouter(
     prefix="/storage"
@@ -31,17 +31,23 @@ async def get_storage_by_food_router(user_id: int, food_id: int, session: AsyncS
 @router.post("/", response_model=None)
 async def add_storages_router(storages: StoragePost, session: AsyncSession = Depends(get_session)):
     try:
-        # データベースに追加しやすいようにデータを成形
+        
         foods: list[FoodInStoragePost] = storages.foods
-        storages_create: list[StorageCreate] = []
+        # storages_create: list[StorageCreate] = []
         for food in foods:
-            storages_create.append({
-                "food_id": food.food_id,
-                "user_id": storages.user_id,
-                "quantity": food.quantity
-            })
+            await add_storage(session, storages.user_id, food.food_id, food.quantity)
 
-        await add_storages(session, storages_create)
+        # データベースに追加しやすいようにデータを成形
+        # foods: list[FoodInStoragePost] = storages.foods
+        # storages_create: list[StorageCreate] = []
+        # for food in foods:
+        #     storages_create.append({
+        #         "food_id": food.food_id,
+        #         "user_id": storages.user_id,
+        #         "quantity": food.quantity
+        #     })
+
+        # await add_storages(session, storages_create)
         return {"message": "Food added to storage"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

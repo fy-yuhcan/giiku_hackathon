@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from models import User, Food, Recipe, RecipeFood, Storage
 from schemas import StorageCreate, StorageUpdate, StorageWithFoodInfo, StorageSummaryWithFoodInfo, FoodInStorage
 
-# 冷蔵庫に食材を追加
+# 冷蔵庫に食材を複数追加
 async def add_storages(session: AsyncSession, storages_create: list[StorageCreate]):
     storages_create_size = len(storages_create)
     value_clause = ", ".join(
@@ -29,6 +29,15 @@ async def add_storages(session: AsyncSession, storages_create: list[StorageCreat
     }
 
     await session.execute(query, params)
+    await session.commit()
+
+# 冷蔵庫に食材を一件追加
+async def add_storage(session: AsyncSession, user_id: int, food_id: int, quantity: float):
+    query = text(
+        "INSERT INTO storages (user_id, food_id, quantity, added_at) " +
+        "VALUES (:user_id, :food_id, :quantity, current_timestamp)"
+    )
+    await session.execute(query, {"user_id": user_id, "food_id": food_id, "quantity": quantity})
     await session.commit()
 
 # user_idから冷蔵庫のすべての食材を取得（同じ食材も分けて表示）（foodとjoin）
