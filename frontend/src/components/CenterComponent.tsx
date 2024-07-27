@@ -4,8 +4,6 @@ import React from 'react';
 import { useContext } from 'react';
 import { PageContext, pageModeType } from '../context/pageContext';
 import AddFoodByImageComponent from './AddFoodByImageComponent';
-import AddFoodByTextComponent from './AddFoodByTextComponent';
-import AddFoodComponent from './AddFoodComponent';
 import FridgeComponent from './FridgeComponent';
 import HomeComponent from './HomeComponent';
 import RecipeDetailOneComponent from './RecipeDetailOneComponent';
@@ -19,10 +17,6 @@ export default function CenterComponent() {
     switch (pageMode) {
         case "addFoodByImage":
             return <AddFoodByImageComponent/>
-        case "addFoodByText":
-            return <AddFoodByTextComponent/>
-        case "addFood":
-            return <AddFoodComponent/>
         case "fridge":
             return <FridgeComponent/>
         case "home":
