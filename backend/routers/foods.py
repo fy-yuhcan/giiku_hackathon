@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from database import get_session
 from schemas import FoodCreate, FoodModel
-from crud.foods import add_food, get_foods
+from crud.foods import get_foods
 from gpt.detection import encode_image, detect_food
 
 router = APIRouter(
