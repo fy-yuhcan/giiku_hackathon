@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 #from .crud import 
 #from .models import 
 #from .schemas import 
-from routers import foods, storages, recipes
+from routers import foods, storages, recipes,auth
 
 #models.Base.metadata.create_all(bind=engine)
 
@@ -14,6 +14,7 @@ app = FastAPI()
 app.include_router(foods.router)
 app.include_router(storages.router)
 app.include_router(recipes.router)
+app.include_router(auth.router)
 
 @app.get("/")
 async def root():
