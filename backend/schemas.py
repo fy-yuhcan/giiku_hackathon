@@ -16,8 +16,11 @@ class FoodModel(FoodBase):
 class FoodGetOut(FoodBase):
     foods: List[FoodModel]
 
-class FoodInRecipe(FoodModel):
+class FoodInRecipe(BaseModel):
+    food_id: int
+    name: str
     quantity: int
+    unit: str
 
 # Storageベースクラス
 class StorageBase(BaseModel):
@@ -27,6 +30,14 @@ class StorageBase(BaseModel):
 
 class StorageCreate(StorageBase):
     pass
+
+class FoodInStoragePost(BaseModel):
+    food_id: int
+    quantity: int
+
+class StoragePost(BaseModel):
+    user_id: int
+    foods: list[FoodInStoragePost]
 
 class StorageModel(StorageBase):
     id: int
