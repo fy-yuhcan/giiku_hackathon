@@ -4,13 +4,15 @@ import RecipeSuggestion from '../components/RecipeSuggestion';
 import { PageModeProvider } from '../context/pageContext';
 import CenterComponent from '../components/CenterComponent';
 import { UserProvider } from '../context/userContext';
+import LoginComponent from '../components/LoginComponent';
+
 
 
 const Home = () => {
   /*
   pageModeは
     "addFoodByImage", "addFoodByText"
-    "addFood", "fridge", "home", 
+    "addFood", "fridge", "home",
     "recipeDetailOne", "RecipeSuggestion"
   のどれか
   */
