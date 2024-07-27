@@ -8,7 +8,6 @@ from database import Base
 # ここでデータベースのテーブル定義
 # コード増えそうだったらディレクトリ作ってファイル分けてもいいかも
 
-
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -17,7 +16,6 @@ class User(Base):
 
     recipes = relationship("Recipe", backref="user")
     storages = relationship("Storage", backref="user")
-
 
 class Food(Base):
     __tablename__ = "foods"
@@ -28,7 +26,6 @@ class Food(Base):
     recipe_foods = relationship("RecipeFood", backref="food")
     storages = relationship("Storage", backref="food")
 
-
 class Recipe(Base):
     __tablename__ = "recipes"
     id = Column(Integer, primary_key=True)
@@ -38,15 +35,12 @@ class Recipe(Base):
 
     recipe_foods = relationship("RecipeFood", backref="recipe")
 
-
 class RecipeFood(Base):
     __tablename__ = "recipe_foods"
     id = Column(Integer, primary_key=True)
     food_id = Column(Integer, ForeignKey("foods.id"), nullable=False)
     recipe_id = Column(Integer, ForeignKey("recipes.id"), nullable=False)
     quantity = Column(Float, nullable=False)
-    
-
 
 class Storage(Base):
     __tablename__ = "storages"
@@ -55,3 +49,5 @@ class Storage(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     added_at = Column(Timestamp, server_default=current_timestamp())
     quantity = Column(Float, nullable=False)
+
+

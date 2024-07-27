@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException
 from models import User, Food, Recipe, RecipeFood, Storage
 from schemas import StorageCreate, StorageUpdate, StorageWithFoodInfo, FoodInStorage
 
@@ -18,7 +17,7 @@ async def add_storage(session: AsyncSession, user_id: int, food_id: int, quantit
 async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFoodInfo]:
     query = text(
         "SELECT " + 
-        "foods.id, foods.name, foods.unit " +
+        "foods.id, foods.name, foods.unit, " +
         "SUM(storages.quantity) AS total_quantity, " + 
         "MIN(storages.added_at) AS earliest_added_at " +
         "FROM storages " +
@@ -32,11 +31,11 @@ async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFo
 
     storage = [
         StorageWithFoodInfo(
-            food_id = row[0],
-            name = row[1],
-            unit = row[2],
-            total_quantity = row[3],
-            earliest_added_at = row[4]
+            food_id=row[0],
+            name=row[1],
+            unit=row[2],
+            total_quantity=row[3],
+            earliest_added_at=row[4]
         )
         for row in storage_results
     ]
@@ -46,8 +45,8 @@ async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFo
 async def get_storage_by_food(session: AsyncSession, user_id: int, food_id: int) -> list[FoodInStorage]:
     query = text(
         "SELECT " +
-        "storages.id AS storage_id"
-        "foods.id AS food_id" + 
+        "storages.id AS storage_id, " +
+        "foods.id AS food_id, " + 
         "foods.name, foods.unit, storages.added_at, storages.quantity " +
         "FROM storages " +
         "LEFT JOIN foods ON storages.food_id = foods.id " +
@@ -60,15 +59,16 @@ async def get_storage_by_food(session: AsyncSession, user_id: int, food_id: int)
 
     storage_foods = [
         FoodInStorage(
-            storage_id = row[0],
-            food_id = row[1],
-            name = row[2],
-            unit = row[3],
-            added_at = row[4],
-            quantity = row[5]
+            id=row[0],
+            food_id=row[1],
+            name=row[2],
+            unit=row[3],
+            added_at=row[4],
+            quantity=row[5]
         )
+        for row in storage_foods_results
     ]
-    return storage_foods_results
+    return storage_foods
 
 # 冷蔵庫の特定の食材を削除
 async def delete_storage(session: AsyncSession, storage_id: int):
@@ -86,6 +86,7 @@ async def update_storage(session: AsyncSession, storage_id: int, quantity: float
         "SET quantity = :quantity " +
         "WHERE id = :storage_id"
     )
-    await session.exeute(query, {"storage_id": storage_id, "quantity": quantity})
+    await session.execute(query, {"storage_id": storage_id, "quantity": quantity})
     await session.commit()
+
 
