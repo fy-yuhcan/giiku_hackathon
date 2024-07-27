@@ -16,7 +16,6 @@ async def get_recipes_router(user_id: int, num_recipe: int = 10, session: AsyncS
     try:
         recipes = await get_recipes(session, user_id, num_recipe)
         return {"recipes": recipes}
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -33,7 +32,7 @@ async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSess
         ingredients: list[StorageWithFoodInfo] = await get_storage(session, user_id)
 
         # ChatGPTにレシピ提案をリクエストする
-        suggestion: RecipeSuggestion = await generate_recipe(ingredients, num_servings, uses_storages_only, comment)
+        suggestion: RecipeSuggestion = await generate_recipe(ingredients, num_servings, uses_storages_only, comment, session)
 
         # レシピをデータベースに保存する処理
         db_recipe: RecipeModel = await add_recipe(session, 
@@ -44,19 +43,20 @@ async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSess
                                                   ))
         
         # RecipeFoodsテーブルに追加する処理
+        # ここに適切な処理を追加します
 
         # レスポンスの生成
         return RecipePostOut(
             id=db_recipe.id, 
             title=db_recipe.title, 
-            foods=suggestion["foods"], 
-            content=suggestion["content"]
-        )  # 直す！
-
+            foods=suggestion.foods, 
+            content=suggestion.content
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 # レシピ　作ったボタンの処理
+# ここに適切な処理を追加します
 
 # いらないレシピを削除
 @router.delete("/{recipe_id}")
@@ -68,3 +68,4 @@ async def delete_recipe_router(recipe_id: int, session: AsyncSession = Depends(g
         return {"message": "Recipe deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
