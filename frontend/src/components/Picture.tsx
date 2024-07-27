@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
 import useSWRMutation from 'swr/mutation';
+import { FoodDataType } from '../materialType';
 
-export default function Picture() {
+export default function Picture({setFoodData}) {
 
   const DetectionFoodImagePath = "/storage/img/";
 
-  async function uploadImage(url, { arg }) {
+  async function uploadImage(url: string, { arg }) {
     const formData = new FormData();
     formData.append('upload_file', arg.file);
     //写真をバックエンドに保存するapiにアクセス
@@ -16,21 +17,33 @@ export default function Picture() {
       .then(res => res.json());
   }
 
-  const { trigger, isMutating } = useSWRMutation("/fridge", uploadImage);
+
+  const handleChangeFoodData = (newFoodData: FoodDataType[]) => {
+    setFoodData(newFoodData)
+  }
+
+  const { trigger, data, error } = useSWRMutation("/fridge", uploadImage);
 
   const [previewSrc, setPreviewSrc] = useState(null);
   const fileInputRef = useRef(null);
 
-  const handleChangeFile = async (event) => {
+  const handleChangeFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     const file = event.target.files[0];
     if (file) {
       setPreviewSrc(URL.createObjectURL(file));
-      await trigger({ file });
+      try {
+        const result = await trigger({ file });
+      } catch (e) {
+        console.log(e);
+      }
+      if (data) {
+        handleChangeFoodData(data)
+      }
     }
   };
 
-  const handleDrop = async (event) => {
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {

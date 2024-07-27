@@ -6,7 +6,6 @@ import { PageContext, pageModeType } from '../context/pageContext';
 import AddFoodByImageComponent from './AddFoodByImageComponent';
 import FridgeComponent from './FridgeComponent';
 import HomeComponent from './HomeComponent';
-import RecipeDetailOneComponent from './RecipeDetailOneComponent';
 import RecipeSuggestionComponent from './RecipeSuggestionComponent';
 
 export default function CenterComponent() {
@@ -21,8 +20,6 @@ export default function CenterComponent() {
             return <FridgeComponent/>
         case "home":
             return <HomeComponent/>
-        case "recipeDetailOne":
-            return <RecipeDetailOneComponent/>
         case "recipeSuggestion":
             return <RecipeSuggestionComponent/>
         default:
