@@ -13,7 +13,7 @@ const Home = () => {
   pageModeは
     "addFoodByImage", "addFoodByText"
     "addFood", "fridge", "home",
-    "recipeDetailOne", "RecipeSuggestion"
+    "RecipeCreateAfter", "RecipeSuggestion"
   のどれか
   */
 

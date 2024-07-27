@@ -38,7 +38,15 @@ export default function FoodHandler({FoodData}) {
     setPageMode(fridgePage);
   }
 
+
     //冷蔵庫に保存するフェッチ
+
+  type foodsType = {
+    food_id: number,
+    quantity: number
+  }
+
+  //冷蔵庫に保存するフェッチ
   const {user, setUser} = useContext(UserContext)
   async function updateFridge(url:string, { arg }: {arg: {
       user_id: number,
@@ -53,6 +61,7 @@ export default function FoodHandler({FoodData}) {
     })
     .then(res => res.json());
   }
+
 
   const { trigger, isMutating } = useSWRMutation("/storage/", updateFridge)
   

@@ -6,6 +6,7 @@ import { PageContext, pageModeType } from '../context/pageContext';
 import AddFoodByImageComponent from './AddFoodByImageComponent';
 import FridgeComponent from './FridgeComponent';
 import HomeComponent from './HomeComponent';
+import RecipeCreateAfter from './RecipeCreateAfterComponent';
 import RecipeSuggestionComponent from './RecipeSuggestionComponent';
 
 export default function CenterComponent() {
@@ -20,6 +21,8 @@ export default function CenterComponent() {
             return <FridgeComponent/>
         case "home":
             return <HomeComponent/>
+        case "RecipeCreateAfter":
+            return <RecipeCreateAfterComponent/>
         case "recipeSuggestion":
             return <RecipeSuggestionComponent/>
         default:
@@ -31,6 +34,6 @@ export default function CenterComponent() {
 pageModeは
 "addFoodByImage", "addFoodByText"
 "addFood", "fridge", "home",
-"recipeDetailOne", "RecipeSuggestion"
+"RecipeCreateAfter", "RecipeSuggestion"
 のどれか
 */
