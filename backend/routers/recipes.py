@@ -4,7 +4,7 @@ from database import get_session
 from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo, RecipeCreate, RecipePutIn
 from crud.recipes import add_recipe, get_recipes, delete_recipe
 from crud.storages import get_storage
-from crud.recipefood import add_recipe_foods, get_recipe_foods
+from crud.recipefood import add_recipe_food, get_recipe_foods
 from gpt.generate_recipe import generate_recipe
 
 router = APIRouter(
