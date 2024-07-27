@@ -12,8 +12,12 @@ router = APIRouter(
 # 過去にChatGPTに提案してもらったレシピを表示
 @router.get("/", response_model=RecipeGetOut)
 async def get_recipes_router(user_id: int, num_recipe: int = 10, session: AsyncSession = Depends(get_session)):
-    recipes = await get_recipes(session, user_id, num_recipe)
-    return {"recipes": recipes}
+    try:
+        recipes = await get_recipes(session, user_id, num_recipe)
+        return {"recipes": recipes}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ChatGPTにレシピの提案をしてもらう
 @router.post("/", response_model=RecipePostOut)
@@ -37,7 +41,10 @@ async def create_recipe_router(recipe: RecipePostIn, session: AsyncSession = Dep
 # いらないレシピを削除
 @router.delete("/{recipe_id}")
 async def delete_recipe_router(recipe_id: int, session: AsyncSession = Depends(get_session)):
-    success = await delete_recipe(session, recipe_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Recipe not found")
-    return {"message": "Recipe deleted successfully"}
+    try:
+        success = await delete_recipe(session, recipe_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Recipe not found")
+        return {"message": "Recipe deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

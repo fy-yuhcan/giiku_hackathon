@@ -23,17 +23,26 @@ router = APIRouter(
 #ユーザーが画像を投稿する
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    base64_image = encode_image(file)
-    result = detect_food(base64_image)
-    return {"result": result}
+    try:
+        base64_image = encode_image(file)
+        result = detect_food(base64_image)
+        return {"result": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 #食材を一つ追加
 @router.post("/")
 async def add_food_route(food: FoodCreate, session: AsyncSession = Depends(get_session)):
-    await add_food(session, food.name, food.unit)
-    return {"name": food.name, "unit": food.unit}
+    try:
+        await add_food(session, food.name, food.unit)
+        return {"name": food.name, "unit": food.unit}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 #全ての食材を取得
 @router.get("/", response_model=list[FoodModel])
 async def get_foods_route(session: AsyncSession = Depends(get_session)):
-    return await get_foods(session)
+    try:
+        return await get_foods(session)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
