@@ -13,8 +13,35 @@ async def add_storage(session: AsyncSession, user_id: int, food_id: int, quantit
     await session.execute(query, {"user_id": user_id, "food_id": food_id, "quantity": quantity})
     await session.commit()
 
-# user_idから冷蔵庫のすべての食材を取得（foodとjoin）
+# user_idから冷蔵庫のすべての食材を取得（同じ食材も分けて表示）（foodとjoin）
 async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFoodInfo]:
+    query = text(
+        "SELECT " + 
+        "foods.id, foods.name, foods.unit, " +
+        "storages.quantity, storages.added_at " +
+        "FROM storages " +
+        "LEFT JOIN foods ON storages.food_id = foods.id " +
+        "WHERE storages.user_id = :user_id " +
+        "ORDER BY storages.added_at"
+    )
+    result = await session.execute(query, {"user_id": user_id})
+    storage_results = result.fetchall()
+
+    storage = [
+        StorageWithFoodInfo(
+            food_id=row[0],
+            name=row[1],
+            unit=row[2],
+            total_quantity=row[3],
+            earliest_added_at=row[4]
+        )
+        for row in storage_results
+    ]
+    return storage
+
+
+# user_idから冷蔵庫のすべての食材を取得 (同じ食材はまとめる)（foodとjoin）
+async def get_storage_summary(session: AsyncSession, user_id: int) -> list[StorageWithFoodInfo]:
     query = text(
         "SELECT " + 
         "foods.id, foods.name, foods.unit, " +
@@ -42,7 +69,7 @@ async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFo
     return storage
 
 # 冷蔵庫の食材の詳細（それぞれの買った日、残っている量）を取得
-async def get_storage_by_food(session: AsyncSession, user_id: int, food_id: int) -> list[FoodInStorage]:
+async def get_storage_summary_by_food(session: AsyncSession, user_id: int, food_id: int) -> list[FoodInStorage]:
     query = text(
         "SELECT " +
         "storages.id AS storage_id, " +
