@@ -1,11 +1,15 @@
-import React from 'react';
-import { useContext } from 'react';
+import dynamic from 'next/dynamic';
+import React, { useContext } from 'react';
 import { PageContext, pageModeType } from '../context/pageContext';
 import SmallButton from './SmallButton';
+
+// BackButtonコンポーネントを動的にインポート（クライアントサイドでのみ使用）
+const BackButton = dynamic(() => import('./BackButton'), { ssr: false });
 
 export default function RecipeSuggestion() {
   const { pageMode, setPageMode } = useContext(PageContext);
   const recipeDetailOne: pageModeType = "recipeDetailOne";
+  const home: pageModeType = "home"; // 遷移先のパスを指定
 
   const handleInputQuery = () => {
     /* APIたたく */
@@ -14,6 +18,9 @@ export default function RecipeSuggestion() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-yellow-100">
+      <div className="absolute top-28 left-8">
+        <BackButton pageChangeTo={home} /> {/* 戻るボタンを追加 */}
+      </div>
       <div className="text-center w-7/8 max-w-2xl">
         <h2 className="text-2xl font-bold mb-4">あなただけのレシピを作成します</h2>
         <textarea
@@ -21,6 +28,7 @@ export default function RecipeSuggestion() {
           placeholder="現在の気分や体調を入力してください あっさりしたものが食べたい気分 など…"
         ></textarea>
         <div className="mb-4">
+          <label className="block mb-2">何人前か</label>
           <select className="border rounded p-2 w-full">
             <option value="1">1人前</option>
             <option value="2">2人前</option>

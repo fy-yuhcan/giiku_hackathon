@@ -3,7 +3,7 @@
 import React, { useContext, useState } from 'react';
 import SmallButton from './SmallButton';
 import { PageContext, pageModeType } from '../context/pageContext';
-import internal from 'stream';
+import BackButton from './BackButton'; // BackButtonコンポーネントをインポート
 
 export type ingredientsType = {
   name: string,
@@ -22,9 +22,9 @@ export default function FoodHandler() {
   };
 
   //すでにある食材の変更
-  const handleChange = (index: number, field: string, value: string|number) => {
+  const handleChange = (index: number, field: string, value: string | number) => {
     const newIngredients = [...ingredients];
-    if (value === "quantity") {
+    if (field === "quantity") {
       newIngredients[index][field] = parseFloat(value);
     } else {
       newIngredients[index][field] = value;
@@ -33,30 +33,38 @@ export default function FoodHandler() {
   };
 
   //保存 & 冷蔵庫ページに移動
-  const fridgePage: pageModeType = "fridge"
-  const {pageMode, setPageMode} = useContext(PageContext)
+  const fridgePage: pageModeType = "fridge";
+  const home: pageModeType = "home"; // 遷移先のパスを指定
+  const { setPageMode } = useContext(PageContext);
+
   const handlePageChange = () => {
-    setPageMode(fridgePage)
+    setPageMode(fridgePage);
   }
 
-  const fetcher = (url:string, method:string, body:{
-    
-  }) => {
-    fetch(url, { 
+  const fetcher = (url: string, method: string, body: {}) => {
+    fetch(url, {
       method: method,
-      body: body
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
-    .then(res => res.json())
+      .then(res => res.json());
   }
-  const handleSubmit = (event) => {
-    handlePageChange()
-  };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // handlePageChange() を呼び出す前に適切なAPI呼び出しなどを行う
+    handlePageChange();
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-3/4 max-w-lg mx-auto mt-10">
+      <div className="absolute top-28 left-8">
+        <BackButton pageChangeTo={home} /> {/* 戻るボタンを追加 */}
+      </div>
       <h2 className="text-2xl font-bold text-center mb-4">新しく追加する食材</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-3 gap-4 mb-4">
           <label className="col-span-1 text-right">食材名</label>
           <label className="col-span-1 text-right">数</label>
@@ -103,7 +111,7 @@ export default function FoodHandler() {
           </button>
         </div>
         <div className="text-center">
-          <SmallButton handler={handleSubmit} label={"保存"}/>
+          <SmallButton handler={handleSubmit} label={"保存"} />
         </div>
       </form>
     </div>
