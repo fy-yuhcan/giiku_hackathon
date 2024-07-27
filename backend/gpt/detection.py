@@ -2,6 +2,7 @@ from fastapi import UploadFile
 import base64
 import requests
 import openai
+import os
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
