@@ -26,12 +26,13 @@ async def upload_image(upload_file: UploadFile = File(...), session: AsyncSessio
             encoded_image = encode_image(buffer)
 
         # 画像をエンコードして食材を識別
-        detected_foods = detect_food(encoded_image)
+        detected_foods = await detect_food(encoded_image, session)
 
         return {"filename": file_path, "type": upload_file.content_type, "result": detected_foods}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 

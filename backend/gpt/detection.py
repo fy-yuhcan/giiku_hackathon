@@ -5,7 +5,7 @@ import openai
 import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from crud.foods import get_foods
-from database import get_session
+import json
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -95,6 +95,8 @@ async def detect_food(base64_image, session: AsyncSession):
             item["unit"] = food_data[food_name]["unit"]
 
     return detected_foods
+
+
 
 
 
