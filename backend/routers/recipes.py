@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_session
-from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo, RecipeCreate
+from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo, RecipeCreate, RecipePutIn
 from crud.recipes import add_recipe, get_recipes, delete_recipe
 from crud.storages import get_storage
 from crud.recipefood import add_recipe_foods, get_recipe_foods
@@ -59,7 +59,12 @@ async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSess
         raise HTTPException(status_code=500, detail=str(e))
 
 # レシピ　作ったボタンの処理
-# ここに適切な処理を追加します
+@router.put("/")
+async def use_recipe(recipe: RecipePutIn, session: AsyncSession = Depends(get_session)):
+    try:
+        pass
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # いらないレシピを削除
 @router.delete("/{recipe_id}")
