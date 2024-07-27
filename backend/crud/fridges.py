@@ -20,11 +20,12 @@ async def get_fridge_contents(session: AsyncSession, user_id: int):
         "SELECT " + 
         "foods.id, foods.name, foods.unit " +
         "SUM(fridges.quantity) AS total_quantity, " + 
-        "MIN(fridges.added_at) AS oldest_added_at " +
+        "MIN(fridges.added_at) AS earliest_added_at " +
         "FROM fridges " +
         "LEFT JOIN foods ON fridges.food_id = foods.id " +
         "WHERE fridges.user_id = :user_id " +
-        "GROUP BY fridges.food_id"
+        "GROUP BY fridges.food_id " +
+        "ORDER BY earliest_added_at"
     )
     result = await session.execute(query, {"user_id": user_id})
     fridge_contents = result.fetchall()
