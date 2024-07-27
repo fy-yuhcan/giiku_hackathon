@@ -35,4 +35,4 @@ async def add_food_route(name: str, unit: str, session: AsyncSession = Depends(g
 #全ての食材を取得
 @router.get("/", response_model=list[FoodModel])
 async def get_foods_route(session: AsyncSession = Depends(get_session)):
-    return
+    return await get_foods(session)
