@@ -20,3 +20,15 @@ export interface FoodItem {
     quantity: string | number;
     unit: string;
   }
+
+export type RecipePostType = {
+    user_id: number,
+    num_servings: number,
+    uses_storages_only: "true" | "false",
+    comment: string
+}
+
+export type RecipePutType = {
+    user_id: number,
+    recipe_id: number
+}

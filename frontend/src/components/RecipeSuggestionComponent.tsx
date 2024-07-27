@@ -1,10 +1,12 @@
 import React, { useContext, useState } from 'react';
 import RecipeSuggestion from './RecipeSuggestion';
-import RecipeButton from './RecipeButton';
 import RecipeWindow from './RecipeWindow';
 import SmallButton from './SmallButton';
 import { UserContext } from '../context/userContext';
 import useSWR from 'swr';
+import { RecipePutType } from '../materialType';
+import useSWRMutation from 'swr/mutation';
+import { PageContext, pageModeType } from '../context/pageContext';
 
 export default function RecipeSuggestionComponent() {
 
@@ -31,12 +33,14 @@ export default function RecipeSuggestionComponent() {
     },
   ]
 
-    const fetcher = (url: string) => {
-      fetch(url)
-      .then(res => res.json())
+  const fetcher = (url: string) => {
+    fetch(url)
+    .then(res => res.json())
   }
 
+  const fridge: pageModeType = "fridge"
   const { user, setUser } = useContext(UserContext)
+  const { pageMode, setPageMode } = useContext(PageContext)
   const { data, error, isLoading } = useSWR(`/recipe?user_id=${user.user_id}`, fetcher)
   //if (error) return <div>failed to load</div>
   //if (isLoading) return <div>loading...</div>
@@ -51,10 +55,24 @@ export default function RecipeSuggestionComponent() {
     setShowRecipe(-1)
   }
 
-  const handleCooked = () => {
-    // 作った！ボタンの処理をここに追加
-
+  //fetcher
+  const createSuggestion = async (url: string, {arg}: {arg: RecipePutType}) => {
+    await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(arg)
+    })
   }
+
+  //useSWR定義
+  const { trigger, isMutating } = useSWRMutation("/recipe/", createSuggestion)
+
+
+  //「作った」ボタンを押したらapiを呼び出し
+  const handleCooked = async(recipe_id: number) => {
+    await trigger({user_id: user.user_id, recipe_id: recipe_id})
+    setPageMode(fridge)
+  }
+
 
   if (showRecipe > 0) {
     for (let i = 0; i < dummy_data.length; i++) {
@@ -63,7 +81,7 @@ export default function RecipeSuggestionComponent() {
           <>
             <RecipeWindow content={dummy_data[i].text} />
             <SmallButton handler={dropRecipe} label={"戻る"} />
-            <SmallButton handler={handleCooked} label={"作った！"} />
+            <SmallButton handler={() => handleCooked(showRecipe)} label={"作った！"} />
           </>
         )
       }
@@ -90,3 +108,4 @@ export default function RecipeSuggestionComponent() {
     );
   }
 }
+

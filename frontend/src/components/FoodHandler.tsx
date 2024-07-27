@@ -39,13 +39,6 @@ export default function FoodHandler({FoodData}) {
   }
 
 
-    //冷蔵庫に保存するフェッチ
-
-  type foodsType = {
-    food_id: number,
-    quantity: number
-  }
-
   //冷蔵庫に保存するフェッチ
   const {user, setUser} = useContext(UserContext)
   async function updateFridge(url:string, { arg }: {arg: {
@@ -71,7 +64,6 @@ export default function FoodHandler({FoodData}) {
     })
     handlePageChange()
   };
-
 
 
   return (

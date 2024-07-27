@@ -1,11 +1,13 @@
-import React from 'react';
+"use client";
+
+import React, { useContext } from 'react';
 import Header from '../components/Header';
-import RecipeSuggestion from '../components/RecipeSuggestion';
 import { PageModeProvider } from '../context/pageContext';
 import CenterComponent from '../components/CenterComponent';
 import { UserProvider } from '../context/userContext';
 import LoginComponent from '../components/LoginComponent';
-
+import { SuggestionRecipeIdContextProvider } from '../context/recipeContext';
+import { UserContext } from '../context/userContext';
 
 
 const Home = () => {
@@ -17,9 +19,12 @@ const Home = () => {
   のどれか
   */
 
-  //const [pageMode, setPageMode] = useState("home")
-  return (
-    <div>
+  const { user } = useContext(UserContext)
+  
+  if ( true /* user.isLogin */) {
+    return (
+      <div>
+      <SuggestionRecipeIdContextProvider>
       <UserProvider>
       <PageModeProvider>
         <div className="min-h-screen bg-yellow-100 flex flex-col justify-between">
@@ -30,8 +35,16 @@ const Home = () => {
         </div>
       </PageModeProvider>
       </UserProvider>
+      </SuggestionRecipeIdContextProvider>
     </div>
-  );
+    )
+  } else {
+    return (
+      <div>
+      <LoginComponent></LoginComponent>
+    </div>
+    )
+  }
 };
 
 export default Home;
