@@ -28,9 +28,9 @@ class StorageUpdate(BaseModel):
 
 class StorageWithFoodInfo(BaseModel):
     food_id: int
-    name: str,
-    unit: str,
-    total_quantity: float,
+    name: str
+    unit: str
+    total_quantity: float
     earliest_added_at: datetime
 
 class FoodInStorage(BaseModel):
