@@ -53,26 +53,30 @@ class StoragePutIn(BaseModel):
     quantity: float
 
 # Recipe関連の定義
-class RecipeModel(BaseModel):
-    pass
+class RecipeBase(BaseModel):
+    title: str
+    content: str
+
+class RecipeCreate(BaseModel):
+    user_id: int
+
+class RecipeModel(RecipeBase):
+    id: int
 
 class RecipeGetOut(RecipeModel):
-    id: int
     foods: List[FoodInStorage]
-
-class RecipePostIn(RecipeModel):
-    user_id: int
-    query: str
-    is_in_storage_only: Literal["true",  "false"]
-
-class RecipePostOut(RecipeModel):
-    text: Union[str, None] = None
 
 class RecipeRequest(BaseModel):
     user_id: int
     num_servings: int
-    uses_storages_only: bool
+    is_in_storage_only: Literal["true",  "false"]
     comment: str
+
+class RecipeSuggestion(BaseModel):
+    pass
+
+class RecipePostOut(RecipeModel):
+    text: Union[str, None] = None
 
 # Food関連の定義
 class FoodBase(BaseModel):
