@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
-from ..schemas import FoodBase, Food FoodGetIn, FoodGetOut
+from ..schemas import FoodCreate, FoodModel
 from ..crud.foods import add_food, get_foods
 from ..gpt.detection import encode_image, detect_food
 
@@ -27,10 +27,11 @@ async def upload_file(file: UploadFile = File(...)):
     return {"result": result}
 
 #食材を一つ追加
-@router.post("/", response_model=FoodBase)
+@router.post("/", response_model=FoodCreate)
 async def add_food_route(name: str, unit: str, session: AsyncSession = Depends(get_session)):
     return await add_food(session, name, unit)
 
 #全ての食材を取得
-@router.get("/", response_model=list[Food])
-async def get_foods_route(session: AsyncSession = Depends(get_session))
+@router.get("/", response_model=list[FoodModel])
+async def get_foods_route(session: AsyncSession = Depends(get_session)):
+    return
