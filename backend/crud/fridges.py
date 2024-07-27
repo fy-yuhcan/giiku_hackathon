@@ -47,7 +47,7 @@ async def get_fridge_by_food(session: AsyncSession, user_id: int, food_id: int):
     return fridge_foods
 
 # 冷蔵庫の特定の食材を削除
-async def remove_fridge(session: AsyncSession, fridge_id: int):
+async def delete_fridge(session: AsyncSession, fridge_id: int):
     query = text(
         "DELETE FROM fridges " +
         "WHERE id = :fridge_id"
