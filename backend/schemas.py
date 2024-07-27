@@ -60,6 +60,12 @@ class RecipePostIn(RecipeModel):
 class RecipePostOut(RecipeModel):
     text: Union[str, None] = None
 
+class RecipeRequest(BaseModel):
+    user_id: int
+    num_servings: int
+    uses_storages_only: bool
+    comment: str
+
 # Food関連の定義
 class FoodBase(BaseModel):
     name: str
