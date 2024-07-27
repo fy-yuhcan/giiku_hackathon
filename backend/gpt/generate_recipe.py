@@ -5,33 +5,20 @@ import asyncio
 import json
 from datetime import datetime
 from pydantic import BaseModel
-import csv
-
-# スクリプトのディレクトリをパスに追加
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from sqlalchemy.ext.asyncio import AsyncSession
+from crud.foods import get_foods
+from database import get_session
 from schemas import StorageWithFoodInfo, RecipeSuggestion
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-# CSVファイルを読み込む関数
-def load_food_data(file_path):
-    food_data = {}
-    with open(file_path, mode='r', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        next(reader)  # ヘッダーをスキップ
-        for i, row in enumerate(reader, start=1):
-            food_data[row[0]] = {"id": i, "unit": row[1]}
-    return food_data
+async def load_food_data(session: AsyncSession):
+    foods = await get_foods(session)
+    return {food.name: {"id": food.id, "unit": food.unit} for food in foods}
 
-# スクリプトのディレクトリを基準にした絶対パスを生成
-script_dir = os.path.dirname(os.path.abspath(__file__))
-csv_file_path = os.path.join(script_dir, '../data/seed_foods_data.csv')
+async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: int, uses_storages_only: str, comment: str, session: AsyncSession) -> RecipeSuggestion:
+    food_data = await load_food_data(session)
 
-food_data = load_food_data(csv_file_path)
-
-async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: int, uses_storages_only: str, comment: str) -> RecipeSuggestion:
     ingredient_list = "\n".join([
         f"{{\"food_id\": {food_data[item.name]['id']}, \"name\": \"{item.name}\", \"quantity\": {item.quantity}, \"unit\": \"{item.unit}\", \"added_at\": \"{item.added_at}\"}}"
         for item in ingredients
@@ -162,8 +149,11 @@ if __name__ == "__main__":
     uses_storages_only = "true"
     comment = "ヘルシーな料理を作りたい"
 
-    recipe_dict = asyncio.run(generate_recipe(ingredients, num_servings, uses_storages_only, comment))
+    session = AsyncSession(bind=engine)
+
+    recipe_dict = asyncio.run(generate_recipe(ingredients, num_servings, uses_storages_only, comment, session))
     print(json.dumps(recipe_dict, indent=4, ensure_ascii=False))
+
 
 
 
