@@ -32,9 +32,9 @@ class FridgePutIn(FridgeBase):
 class RecipeModel(BaseModel):
     pass
 
-class RecipeGetOut(RecipeModel):
-    id: int
-    foods: List[Food]
+# class RecipeGetOut(RecipeModel):
+#     id: int
+#     foods: List[Food]
 
 class RecipePostIn(RecipeModel):
     user_id: int
