@@ -3,28 +3,23 @@ import base64
 import requests
 import openai
 import os
-from sqlalchemy.ext.asyncio import AsyncSession
-from crud.foods import get_foods
 import json
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-async def load_food_data(session: AsyncSession):
-    foods = await get_foods(session)
-    return {food.name: {"id": food.id, "unit": food.unit} for food in foods}
+def encode_image(file: UploadFile):
+    file.file.seek(0)  # ファイルの先頭に戻る
+    encoded_image = base64.b64encode(file.file.read()).decode('utf-8')
+    print(f"Encoded Image: {encoded_image[:100]}...")  # 最初の100文字を表示
+    return encoded_image
 
-def encode_image(file):
-    file.seek(0)  # ファイルの先頭に戻る
-    return base64.b64encode(file.read()).decode('utf-8')
-
-async def detect_food(base64_image, session: AsyncSession):
-    food_data = await load_food_data(session)
-
+async def detect_food(base64_image, session):
     prompt_message = """
     これらの画像に何の食材がそれぞれ何個またはどのくらいの量写っているかJSONのリストで出力してください。
     答えだけを出力してください。
     食材の名前は日本語にしてください。
     JSONのvalueは数値のみで、単位は別のKEYのValueとして持つようにしてください。
+
     例：
     [
         {
@@ -81,10 +76,15 @@ async def detect_food(base64_image, session: AsyncSession):
         "max_tokens": 300
     }
 
+    print(f"Payload for OpenAI API: {json.dumps(payload, indent=2, ensure_ascii=False)}")  # リクエストペイロードをログ出力
+
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
     response.raise_for_status()
 
-    detected_foods = response.json()["choices"][0]["message"]["content"]
+    detected_foods = response.json()
+    print(f"OpenAI API Response: {json.dumps(detected_foods, indent=2, ensure_ascii=False)}")  # レスポンスをログ出力
+
+    detected_foods = detected_foods["choices"][0]["message"]["content"]
     detected_foods = detected_foods.strip("```json\n").strip("\n```")
     detected_foods = json.loads(detected_foods)
 
@@ -95,6 +95,7 @@ async def detect_food(base64_image, session: AsyncSession):
             item["unit"] = food_data[food_name]["unit"]
 
     return detected_foods
+
 
 
 
