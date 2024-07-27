@@ -6,7 +6,7 @@ from models import User, Food, Recipe, RecipeFood, Fridge
 # from schemas import FridgeSchema, FoodSchema, RecipeSchema
 
 # 冷蔵庫に食材を追加
-async def add_food_to_fridge(session: AsyncSession, user_id: int, food_id: int, quantity: float):
+async def add_fridge(session: AsyncSession, user_id: int, food_id: int, quantity: float):
     query = text(
         "INSERT INTO fridges (user_id, food_id, quantity, added_at) " +
         "VALUES (:user_id, :food_id, :quantity, current_timestamp)"
@@ -32,7 +32,7 @@ async def get_fridge(session: AsyncSession, user_id: int):
     return fridge_contents
 
 # 冷蔵庫の食材の詳細（それぞれの買った日、残っている量）を取得
-async def get_fridge_foods(session: AsyncSession, user_id: int, food_id: int):
+async def get_fridge_by_food(session: AsyncSession, user_id: int, food_id: int):
     query = text(
         "SELECT " +
         "foods.id, foods.name, foods.unit, fridges.added_at, fridges.quantity " +
@@ -47,7 +47,7 @@ async def get_fridge_foods(session: AsyncSession, user_id: int, food_id: int):
     return fridge_foods
 
 # 冷蔵庫の特定の食材を削除
-async def remove_food_from_fridge(session: AsyncSession, fridge_id: int):
+async def remove_fridge(session: AsyncSession, fridge_id: int):
     query = text(
         "DELETE FROM fridges " +
         "WHERE id = :fridge_id"
@@ -56,7 +56,7 @@ async def remove_food_from_fridge(session: AsyncSession, fridge_id: int):
     await session.commit()
 
 # 冷蔵庫の食材の量を更新（減らす）
-async def update_food_in_fridge(session: AsyncSession, fridge_id: int, quantity: float):
+async def update_fridge(session: AsyncSession, fridge_id: int, quantity: float):
     query = text(
         "UPDATE fridges " +
         "SET quantity = :quantity " +
