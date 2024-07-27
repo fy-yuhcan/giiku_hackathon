@@ -16,7 +16,7 @@ class User(Base):
     password = Column(String, nullable=False)
 
     recipes = relationship("Recipe", backref="user")
-    fridges = relationship("Fridge", backref="user")
+    storages = relationship("Storage", backref="user")
 
 
 class Food(Base):
@@ -26,7 +26,7 @@ class Food(Base):
     unit = Column(String, nullable=False)
 
     recipe_foods = relationship("RecipeFood", backref="food")
-    fridges = relationship("Fridge", backref="food")
+    storages = relationship("Storage", backref="food")
 
 
 class Recipe(Base):
@@ -48,8 +48,8 @@ class RecipeFood(Base):
     
 
 
-class Fridge(Base):
-    __tablename__ = "fridges"
+class Storage(Base):
+    __tablename__ = "storages"
     id = Column(Integer, primary_Key=True)
     food_id = Column(Integer, ForeignKey("foods.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)

@@ -1,5 +1,5 @@
 import React from 'react';
-import FridgeContent from '../../components/FridgeContent';
+import StorageContent from '../../components/StorageContent';
 import ExpiryItems from '../../components/ExpiryItems';
 import ShoppingReminder from '../../components/ShoppingReminder';
 import MenuButton from '../../components/MenuButton';

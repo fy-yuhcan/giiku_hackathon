@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 #from .crud import 
 #from .models import 
 #from .schemas import 
-from routers import foods, fridges, recipes
+from routers import foods, storages, recipes
 
 #models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.include_router(foods.router)
-app.include_router(fridges.router)
+app.include_router(storages.router)
 app.include_router(recipes.router)
 
 @app.get("/")
