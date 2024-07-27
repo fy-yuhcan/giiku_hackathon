@@ -1,18 +1,20 @@
 import React from 'react';
+import Image from 'next/image';
 import Button from './Button';
+import shokumaneImage from '../img/shokumane.png'; // 画像をインポート
 import { pageModeType } from '../context/pageContext';
 
 export default function HomeComponent() {
-    const cartIconUrl: string = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    const cookingIconUrl: string = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+  const addFoodByImage: pageModeType = "addFoodByImage";
+  const recipeSuggestion: pageModeType = "recipeSuggestion";
 
-    const addFoodByImage: pageModeType = "addFoodByImage";
-    const recipeSuggestion: pageModeType = "recipeSuggestion";
-    return (
-      <>
-        <img src="../img/shokumane.png" alt="shokumane.png"></img>
-        <Button pageChangeTo={addFoodByImage} label={"写真で追加"} icon={cartIconUrl}/>
-        <Button pageChangeTo={recipeSuggestion} label={"入力する"} icon={cookingIconUrl}/>
-      </>
-    );
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-yellow-100">
+      <Image src={shokumaneImage} alt="shokumane" className="mb-8" /> {/* next/image コンポーネントを使用 */}
+      <div className="space-y-4">
+        <Button pageChangeTo={addFoodByImage} label={"食材の追加"} icon={"shopping-cart"} />
+        <Button pageChangeTo={recipeSuggestion} label={"ごはんを作る"} icon={"utensils"} />
+      </div>
+    </div>
+  );
 }

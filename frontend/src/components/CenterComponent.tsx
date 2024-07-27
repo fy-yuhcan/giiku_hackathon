@@ -12,13 +12,7 @@ import RecipeDetailOneComponent from './RecipeDetailOneComponent';
 import RecipeSuggestionComponent from './RecipeSuggestionComponent';
 
 export default function CenterComponent() {
-    /*
-    pageModeは
-    "addFoodByImage", "addFoodByText"
-    "addFood", "fridge", "home", 
-    "recipeDetailOne", "RecipeSuggestion"
-    のどれか
-    */
+
 
     const { pageMode, setPageMode } = useContext(PageContext)
 
@@ -39,5 +33,13 @@ export default function CenterComponent() {
             return <RecipeSuggestionComponent/>
         default:
             throw new Error("Exception occured: a page is invalid")
-        }    
+        }
 }
+
+/*
+pageModeは
+"addFoodByImage", "addFoodByText"
+"addFood", "fridge", "home",
+"recipeDetailOne", "RecipeSuggestion"
+のどれか
+*/
