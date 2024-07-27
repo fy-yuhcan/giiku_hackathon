@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_session
-from schemas import StorageWithFoodInfo, FoodInStorage
-from crud.storages import add_storage, get_storage, get_storage_by_food, delete_storage, update_storage
+from schemas import StorageWithFoodInfo, FoodInStorage, StorageCreate
+from crud.storages import add_storage, get_storage_summary, get_storage_by_food, delete_storage, update_storage
 
 router = APIRouter(
     prefix="/storage"
@@ -13,9 +13,9 @@ router = APIRouter(
 
 # user_idから冷蔵庫のすべての食材を取得
 @router.get("/{user_id}", response_model=list[StorageWithFoodInfo])
-async def get_storage_router(user_id: int, session: AsyncSession = Depends(get_session)):
+async def get_storage_summary_router(user_id: int, session: AsyncSession = Depends(get_session)):
     try:
-        return await get_storage(session, user_id)
+        return await get_storage_summary(session, user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -29,9 +29,9 @@ async def get_storage_by_food_router(user_id: int, food_id: int, session: AsyncS
 
 # 冷蔵庫に食材を追加
 @router.post("/", response_model=None)
-async def add_storage_router(user_id: int, food_id: int, quantity: float, session: AsyncSession = Depends(get_session)):
+async def add_storage_router(storage: StorageCreate, session: AsyncSession = Depends(get_session)):
     try:
-        await add_storage(session, user_id, food_id, quantity)
+        await add_storage(session, storage.user_id, storage.food_id, storage.quantity)
         return {"message": "Food added to storage"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

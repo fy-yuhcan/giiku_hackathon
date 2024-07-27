@@ -3,6 +3,7 @@ import os
 import aiohttp
 import asyncio
 import json
+from schemas import StorageWithFoodInfo, RecipeSuggestion
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -45,11 +46,17 @@ mock_data = [
     }
 ]
 
-async def generate_recipe(ingredients):
+async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: int, uses_storages_only: str, comment: str) -> RecipeSuggestion:
+    # uses_storages_only の処理書く
+    ingredient_list = "\n".join([f"{item.name}: {item.quantity}{item.unit}" for item in ingredients])
+    
     prompt_message = f"""
     これらの食材を使用して作れるレシピを教えてください。以下は食材のリストです：
+    {ingredient_list}
 
-    {ingredients}
+    このレシピは {num_servings} 人前です。
+    冷蔵庫の中身だけを使うかどうか: {uses_storages_only}
+    コメント: {comment}
 
     レシピの手順をJSONフォーマットで出力してください。
     答えだけを出力してください。
@@ -126,13 +133,12 @@ async def generate_recipe(ingredients):
     return recipe_dict
 
 if __name__ == "__main__":
-    ingredients = "\n".join([f"{item['name']}: {item['quantity']}{item['unit']}" for item in mock_data])
-    recipe_dict = asyncio.run(generate_recipe(ingredients))
+    ingredients = [StorageWithFoodInfo(**item) for item in mock_data]
+    num_servings = 4
+    uses_storages_only = "true"
+    comment = "今日は寒いので温かい料理が食べたいです。"
+    recipe_dict = asyncio.run(generate_recipe(ingredients, num_servings, uses_storages_only, comment))
     print(json.dumps(recipe_dict, indent=4, ensure_ascii=False))
-
-
-
-
 
 
 
