@@ -30,7 +30,8 @@ async def upload_file(file: UploadFile = File(...)):
 #食材を一つ追加
 @router.post("/", response_model=FoodCreate)
 async def add_food_route(name: str, unit: str, session: AsyncSession = Depends(get_session)):
-    return await add_food(session, name, unit)
+    await add_food(session, name, unit)
+    return {"name": name, "unit": unit}
 
 #全ての食材を取得
 @router.get("/", response_model=list[FoodModel])
