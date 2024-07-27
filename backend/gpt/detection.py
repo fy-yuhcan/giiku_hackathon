@@ -3,9 +3,9 @@ import base64
 import requests
 import openai
 import os
-import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from crud.foods import get_foods
+from database import get_session
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -13,17 +13,18 @@ async def load_food_data(session: AsyncSession):
     foods = await get_foods(session)
     return {food.name: {"id": food.id, "unit": food.unit} for food in foods}
 
-def encode_image(file: UploadFile):
-    file.file.seek(0)  # ファイルの先頭に戻る
-    return base64.b64encode(file.file.read()).decode('utf-8')
+def encode_image(file):
+    file.seek(0)  # ファイルの先頭に戻る
+    return base64.b64encode(file.read()).decode('utf-8')
 
-def detect_food(base64_image, session: AsyncSession):
+async def detect_food(base64_image, session: AsyncSession):
+    food_data = await load_food_data(session)
+
     prompt_message = """
     これらの画像に何の食材がそれぞれ何個またはどのくらいの量写っているかJSONのリストで出力してください。
     答えだけを出力してください。
     食材の名前は日本語にしてください。
     JSONのvalueは数値のみで、単位は別のKEYのValueとして持つようにしてください。
-
     例：
     [
         {
@@ -74,18 +75,7 @@ def detect_food(base64_image, session: AsyncSession):
         "messages": [
             {
                 "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": prompt_message
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{base64_image}"
-                        }
-                    }
-                ]
+                "content": prompt_message
             }
         ],
         "max_tokens": 300
@@ -98,10 +88,6 @@ def detect_food(base64_image, session: AsyncSession):
     detected_foods = detected_foods.strip("```json\n").strip("\n```")
     detected_foods = json.loads(detected_foods)
 
-    # 食材データを取得
-    food_data = asyncio.run(load_food_data(session))
-
-    # 食材情報にIDと単位を追加
     for item in detected_foods:
         food_name = item["name"]
         if food_name in food_data:
@@ -109,6 +95,7 @@ def detect_food(base64_image, session: AsyncSession):
             item["unit"] = food_data[food_name]["unit"]
 
     return detected_foods
+
 
 
 
