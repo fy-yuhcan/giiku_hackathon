@@ -19,14 +19,13 @@ async def add_recipe(session: AsyncSession, recipe: RecipeCreate) -> RecipeModel
     return RecipeModel(id=recipe_id, user_id=recipe.user_id, title=recipe.title, content=recipe.content)
 
 # user_idからすべてのレシピを取得
-async def get_recipes(session: AsyncSession, user_id: int, num_recipe: int):
+async def get_recipes(session: AsyncSession, user_id: int):
     query = text(
         "SELECT * " +
         "FROM recipes " +
-        "WHERE user_id = :user_id " +
-        "LIMIT :num_recipe"
+        "WHERE user_id = :user_id"
     )
-    result = await session.execute(query, {"user_id": user_id, "num_recipe": num_recipe})
+    result = await session.execute(query, {"user_id": user_id})
     recipes = result.fetchall()
 
     return recipes

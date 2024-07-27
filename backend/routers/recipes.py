@@ -4,6 +4,7 @@ from database import get_session
 from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo, RecipeCreate
 from crud.recipes import add_recipe, get_recipes, delete_recipe
 from crud.storages import get_storage
+from crud.recipefood import add_recipe_foods, get_recipe_foods
 from gpt.generate_recipe import generate_recipe
 
 router = APIRouter(
@@ -12,10 +13,10 @@ router = APIRouter(
 
 # 過去にChatGPTに提案してもらったレシピを表示
 @router.get("/", response_model=RecipeGetOut)
-async def get_recipes_router(user_id: int, num_recipe: int = 10, session: AsyncSession = Depends(get_session)):
+async def get_recipes_router(user_id: int, session: AsyncSession = Depends(get_session)):
     try:
-        recipes = await get_recipes(session, user_id, num_recipe)
-        return {"recipes": recipes}
+        return await get_recipes(session, user_id)
+        # return {"recipes": recipes}
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -44,6 +45,8 @@ async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSess
                                                   ))
         
         # RecipeFoodsテーブルに追加する処理
+        # foods = suggestion.foods
+
 
         # レスポンスの生成
         return RecipePostOut(
