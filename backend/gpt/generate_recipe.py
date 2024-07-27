@@ -7,7 +7,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from crud.foods import get_foods
-from database import get_session, engine
+from database import get_session, Engine
 from schemas import StorageWithFoodInfo, RecipeSuggestion
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -117,6 +117,43 @@ async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: 
     return recipe_dict
 
 #if __name__ == "__main__":
+    mock_data = [
+        {
+            "storage_id": 1,
+            "food_id": 3,
+            "name": "ピーマン",
+            "quantity": 2,
+            "unit": "個",
+            "added_at": "2024-07-20"
+        },
+        {
+            "storage_id": 2,
+            "food_id": 5,
+            "name": "にんじん",
+            "quantity": 3,
+            "unit": "本",
+            "added_at": "2024-07-18"
+        },
+        {
+            "storage_id": 3,
+            "food_id": 7,
+            "name": "トマト",
+            "quantity": 7,
+            "unit": "個",
+            "added_at": "2024-07-15"
+        }
+    ]
+
+    ingredients = [StorageWithFoodInfo(storage_id=item["storage_id"], food_id=item["food_id"], name=item["name"], quantity=item["quantity"], unit=item["unit"], added_at=datetime.strptime(item["added_at"], "%Y-%m-%d")) for item in mock_data]
+    num_servings = 4
+    uses_storages_only = "true"
+    comment = "ヘルシーな料理を作りたい"
+
+    session = AsyncSession(bind=engine)
+
+    recipe_dict = asyncio.run(generate_recipe(ingredients, num_servings, uses_storages_only, comment, session))
+    print(json.dumps(recipe_dict, indent=4, ensure_ascii=False))
+
     async def main():
         async with AsyncSession(engine) as session:
             # データベースから食材データを取得
