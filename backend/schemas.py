@@ -19,6 +19,14 @@ class StorageUpdate(BaseModel):
     quantity: float
 
 class StorageWithFoodInfo(BaseModel):
+    storage_id: int
+    food_id: int
+    name: str
+    unit: str
+    quantity: float
+    added_at: datetime
+
+class StorageSummaryWithFoodInfo(BaseModel):
     food_id: int
     name: str
     unit: str
@@ -45,17 +53,27 @@ class StoragePutIn(BaseModel):
     quantity: float
 
 # Recipe関連の定義
-class RecipeModel(BaseModel):
-    pass
+class RecipeBase(BaseModel):
+    title: str
+    content: str
+
+class RecipeCreate(BaseModel):
+    user_id: int
+
+class RecipeModel(RecipeBase):
+    id: int
 
 class RecipeGetOut(RecipeModel):
-    id: int
     foods: List[FoodInStorage]
 
-class RecipePostIn(RecipeModel):
+class RecipeRequest(BaseModel):
     user_id: int
-    query: str
+    num_servings: int
     is_in_storage_only: Literal["true",  "false"]
+    comment: str
+
+class RecipeSuggestion(BaseModel):
+    pass
 
 class RecipePostOut(RecipeModel):
     text: Union[str, None] = None
@@ -81,9 +99,6 @@ class UserBase(BaseModel):
 class User(UserBase):
     id: int
     is_active: bool
-
-    class Config:
-        orm_mode = True
 
 class Token(BaseModel):
     access_token: str

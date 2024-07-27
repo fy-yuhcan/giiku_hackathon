@@ -6,22 +6,16 @@ import { PageContext, pageModeType } from '../context/pageContext';
 import useSWRMutation from 'swr/mutation';
 import { UserContext } from '../context/userContext';
 import BackButton from './BackButton'; // BackButtonコンポーネントをインポート
+import { FoodDataType } from '../materialType';
 
 
-export type ingredientsType = {
-  name: string,
-  quantity: number,
-  unit: "個" | "g" | "kg" | "ml" | "l" | "本" | "袋"
-}
 
-export default function FoodHandler() {
-  const [ingredients, setIngredients] = useState<ingredientsType[]>([
-    { name: '', quantity: 0, unit: 'g' },
-  ]);
+export default function FoodHandler({FoodData}) {
+  const [ingredients, setIngredients] = useState<FoodDataType[]>(FoodData);
 
   //食材の追加
   const handleAddIngredient = () => {
-    setIngredients([...ingredients, { name: '', quantity: 0, unit: 'g' }]);
+    setIngredients([...ingredients, {food_id: 0, name: '', quantity: 0, unit: 'g' }]);
   };
 
   //すでにある食材の変更
@@ -45,6 +39,8 @@ export default function FoodHandler() {
   }
 
 
+    //冷蔵庫に保存するフェッチ
+
   type foodsType = {
     food_id: number,
     quantity: number
@@ -52,23 +48,26 @@ export default function FoodHandler() {
 
   //冷蔵庫に保存するフェッチ
   const {user, setUser} = useContext(UserContext)
-  async function updateFridge(url:string, { arg }: {arg: {user_id: number, foods: foodsType[]}}) {
+  async function updateFridge(url:string, { arg }: {arg: {
+      user_id: number,
+      foods: {
+          food_id: number,
+          quantity: number
+      }[]
+  }}) {
     fetch(url, {
       method: "POST",
-      body: JSON.stringify({
-        user_id: arg.user_id,
-        foods: arg.foods
-        })
+      body: JSON.stringify(arg)
     })
     .then(res => res.json());
   }
 
-  const { trigger, isMutating } = useSWRMutation("/fridge", updateFridge)
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    await trigger({user_id: user.user_id, foods:
-      ingredients.map(ingredient => {return {food_id: 0, quantity: ingredient.quantity}})
+  const { trigger, isMutating } = useSWRMutation("/storage/", updateFridge)
+  
+  const handleSubmit = async () => {
+    await trigger({user_id: user.user_id, foods: 
+      ingredients.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})
     })
     handlePageChange()
   };
@@ -81,7 +80,6 @@ export default function FoodHandler() {
         <BackButton pageChangeTo={home} /> {/* 戻るボタンを追加 */}
       </div>
       <h2 className="text-2xl font-bold text-center mb-4">新しく追加する食材</h2>
-      <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-3 gap-4 mb-4">
           <label className="col-span-1 text-right">食材名</label>
           <label className="col-span-1 text-right">数</label>
@@ -130,7 +128,6 @@ export default function FoodHandler() {
         <div className="text-center">
           <SmallButton handler={handleSubmit} label={"保存"} />
         </div>
-      </form>
     </div>
   );
 }

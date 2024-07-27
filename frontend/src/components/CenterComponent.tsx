@@ -6,7 +6,7 @@ import { PageContext, pageModeType } from '../context/pageContext';
 import AddFoodByImageComponent from './AddFoodByImageComponent';
 import FridgeComponent from './FridgeComponent';
 import HomeComponent from './HomeComponent';
-import RecipeCreateAfter from './RecipeCreateAfterComponent';
+import RecipeCreateAfterComponent from './RecipeCreateAfterComponent';
 import RecipeSuggestionComponent from './RecipeSuggestionComponent';
 
 export default function CenterComponent() {

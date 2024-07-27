@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
-interface FoodItem {
-  name: string;
-  quantity: string | number;
-  unit: string;
-}
+import { FoodItem } from '../materialType';
 
 const mockData: FoodItem[] = [
   { name: 'とりもも', quantity: 200, unit: 'g' },
