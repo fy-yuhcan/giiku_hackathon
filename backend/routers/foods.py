@@ -31,13 +31,13 @@ async def upload_file(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 #食材を一つ追加
-@router.post("/")
-async def add_food_route(food: FoodCreate, session: AsyncSession = Depends(get_session)):
-    try:
-        await add_food(session, food.name, food.unit)
-        return {"name": food.name, "unit": food.unit}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# @router.post("/")
+# async def add_food_route(food: FoodCreate, session: AsyncSession = Depends(get_session)):
+#     try:
+#         await add_food(session, food.name, food.unit)
+#         return {"name": food.name, "unit": food.unit}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 #全ての食材を取得
 @router.get("/", response_model=list[FoodModel])
