@@ -19,7 +19,7 @@ async def add_recipe(session: AsyncSession, recipe: RecipeCreate) -> RecipeModel
     return RecipeModel(id=recipe_id, user_id=recipe.user_id, title=recipe.title, content=recipe.content)
 
 # user_idからすべてのレシピを取得
-async def get_recipes(session: AsyncSession, user_id: int):
+async def get_recipes(session: AsyncSession, user_id: int) -> RecipeModel:
     query = text(
         "SELECT * " +
         "FROM recipes " +
