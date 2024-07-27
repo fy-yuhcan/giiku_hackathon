@@ -1,15 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import RecipeSuggestion from './RecipeSuggestion';
 import RecipeButton from './RecipeButton';
 import RecipeWindow from './RecipeWindow';
 import SmallButton from './SmallButton';
-import { PageContext, pageModeType } from '../context/pageContext';
 import { UserContext } from '../context/userContext';
-
+import useSWR from 'swr';
 
 export default function RecipeSuggestionComponent() {
 
-    let content: string = ""
     const dummy_data = [
       {
         recipe_id: 1,
@@ -28,37 +26,44 @@ export default function RecipeSuggestionComponent() {
       },
     ]
 
-    const isShowOneRecipe: boolean = false
-    const handleShowOneRecipe = (recipe_id: number) => {
+    const fetcher = (url) => {
+      fetch(url)
+      .then(res => res.json())
+    }
+
+    const { user, setUser } = useContext(UserContext)
+    const { data, error, isLoading } = useSWR(`/recipe?user_id=${user.user_id}`, fetcher)
+    //if (error) return <div>failed to load</div>
+    //if (isLoading) return <div>loading...</div>
+
+    const [showRecipe, setShowRecipe] = useState<number>(-1);
+
+    const ShowRecipe = (recipe_id: number) => {
+      setShowRecipe(recipe_id)
+    }
+
+    const dropRecipe = () => {
+      setShowRecipe(-1)
+    }
+
+    if (showRecipe > 0) {
       for (let i = 0; i < dummy_data.length; i++) {
-        if (recipe_id === dummy_data[i].recipe_id) {
-          content = dummy_data[i].text
+        if (dummy_data[i].recipe_id === showRecipe) {
+          return (
+            <>
+              <RecipeWindow content={dummy_data[i].text}/>
+              <SmallButton handler={dropRecipe} label={"戻る"}/>
+            </>
+          )
         }
       }
-    }
-
-    const recipeSuggestion: pageModeType = "recipeSuggestion"
-    const {pageMode, setPageMode} = useContext(PageContext)
-    const {user, setUser} = useContext(UserContext)
-    
-    const handleBack = () => {
-      setPageMode(recipeSuggestion)
-    }
-
-    if (isShowOneRecipe) {
-      return (
-        <>
-          <RecipeWindow content={content}/>
-          <SmallButton handler={handleBack} label={"戻る"}/>
-        </>
-      )
     } else {
       return (
         <>
           <RecipeSuggestion/>
           <h1>過去に作ったレシピから選ぶ</h1>
           {
-            dummy_data.map((recipe_id, text, title) => <RecipeButton label={title} onclick={() => handleShowOneRecipe(recipe_id)}/>)
+            dummy_data.map((record, index) => <RecipeButton ShowRecipe={ShowRecipe} record={record} key={index}/>)
           }
         </>
       );
