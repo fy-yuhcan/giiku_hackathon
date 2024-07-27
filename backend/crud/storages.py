@@ -66,6 +66,7 @@ async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFo
         )
         for row in storage_results
     ]
+    print("storage:", storage) #
     return storage
 
 

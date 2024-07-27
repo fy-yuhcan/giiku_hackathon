@@ -17,6 +17,8 @@ async def load_food_data(session: AsyncSession):
     return {food.name: {"id": food.id, "unit": food.unit} for food in foods}
 
 async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: int, uses_storages_only: str, comment: str, session: AsyncSession) -> RecipeSuggestion:
+    
+    print("OPENAI_API_KEY", os.getenv('OPENAI_API_KEY'))
     food_data = await load_food_data(session)
 
     ingredient_list = "\n".join([
@@ -109,7 +111,7 @@ async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: 
     async with aiohttp.ClientSession() as session:
         async with session.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload) as response:
             response_json = await response.json()
-    
+    print('response_json:', response_json)
     content = response_json["choices"][0]["message"]["content"]
     content = content.strip("```json\n").strip("\n```")
     recipe_dict = json.loads(content)

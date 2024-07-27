@@ -15,7 +15,7 @@ async def add_recipe(session: AsyncSession, recipe: RecipeCreate) -> RecipeModel
     result = await session.execute(query, {"user_id": recipe.user_id, "title": recipe.title, "content": recipe.content})
     recipe_id = result.scalar_one()
     await session.commit()
-
+    print('add_recipe:', result)
     return RecipeModel(id=recipe_id, user_id=recipe.user_id, title=recipe.title, content=recipe.content)
 
 # user_idからすべてのレシピを取得
