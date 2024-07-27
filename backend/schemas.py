@@ -2,15 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Literal, Union, Dict
 
-# ここで型定義
-# コード増えそうだったらディレクトリ作ってファイル分けてもいいかも
-
-# class Food(BaseModel):
-#     food_id: List[int]
-#     name: str
-#     quantity: List[int]
-
-
+# Storageベースクラス
 class StorageBase(BaseModel):
     food_id: int
     user_id: int
@@ -28,9 +20,9 @@ class StorageUpdate(BaseModel):
 
 class StorageWithFoodInfo(BaseModel):
     food_id: int
-    name: str,
-    unit: str,
-    total_quantity: float,
+    name: str
+    unit: str
+    total_quantity: float
     earliest_added_at: datetime
 
 class FoodInStorage(BaseModel):
@@ -41,27 +33,24 @@ class FoodInStorage(BaseModel):
     added_at: datetime
     quantity: float
 
-# class StorageGetOut(StorageBase):
-#     id: int
-#     food_id: List[int]
-#     user_id: int
-#     added_at: datetime
-#     quantity: List[int]
+class StorageGetOut(BaseModel):
+    foods: List[FoodInStorage]
 
-# class StoragePostIn(StorageBase):
-#     user_id: str
+class StoragePostIn(BaseModel):
+    food_id: int
+    user_id: int
+    quantity: float
 
-# class StoragePutIn(StorageBase):
-#     id: str
-#     food_id: List[int]
-#     quantity: List[int]
+class StoragePutIn(BaseModel):
+    quantity: float
 
+# Recipe関連の定義
 class RecipeModel(BaseModel):
     pass
 
-# class RecipeGetOut(RecipeModel):
-#     id: int
-#     foods: List[Food]
+class RecipeGetOut(RecipeModel):
+    id: int
+    foods: List[FoodInStorage]
 
 class RecipePostIn(RecipeModel):
     user_id: int
@@ -71,13 +60,16 @@ class RecipePostIn(RecipeModel):
 class RecipePostOut(RecipeModel):
     text: Union[str, None] = None
 
-
-class FoodCreate(BaseModel):
+# Food関連の定義
+class FoodBase(BaseModel):
     name: str
     unit: str
 
-class FoodModel(FoodCreate):
+class FoodCreate(FoodBase):
+    pass
+
+class FoodModel(FoodBase):
     id: int
 
-# class FoodGetOut(FoodBase):
-#     foods: List[Food]
+class FoodGetOut(FoodBase):
+    foods: List[FoodModel]
