@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_session
-from schemas import RecipeGetOut, RecipePostOut, RecipePostIn
+from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo
 from crud.recipes import add_recipe, get_recipes, delete_recipe
+from crud.storages import get_storage
 from gpt.generate_recipe import generate_recipe
 
 router = APIRouter(
@@ -20,20 +21,25 @@ async def get_recipes_router(user_id: int, num_recipe: int = 10, session: AsyncS
         raise HTTPException(status_code=500, detail=str(e))
 
 # ChatGPTにレシピの提案をしてもらう
-@router.post("/", response_model=RecipePostOut)
-async def create_recipe_router(recipe: RecipePostIn, session: AsyncSession = Depends(get_session)):
+@router.post("/", response_model=None)      # あとでスキーマ定義する！
+async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSession = Depends(get_session)):
     try:
+        user_id = recipe_request['user_id']
+        num_servings = recipe_request['num_servings']
+        uses_storages_only = recipe_request['uses_storages_only']
+        comment = recipe_request['comment']
+
         # 食材リストを作成
-        ingredients = recipe.query
+        ingredients: list[StorageWithFoodInfo] = await get_storage(session, recipe_request.user_id)
 
         # ChatGPTにレシピ提案をリクエストする
-        suggestion = await generate_recipe(ingredients)
+        suggestion: RecipeSuggestion = await generate_recipe(ingredients, num_servings, uses_storages_only, comment)
 
         # レシピをデータベースに保存する処理
-        db_recipe = await add_recipe(session, recipe)
+        db_recipe: RecipeModel = await add_recipe(session, recipe_request)      # 直す！
 
         # レスポンスの生成
-        return RecipePostOut(id=db_recipe.id, title=db_recipe.title, foods=suggestion["foods"], content=suggestion["content"])
+        return RecipePostOut(id=db_recipe.id, title=db_recipe.title, foods=suggestion["foods"], content=suggestion["content"])  # 直す！
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
