@@ -8,16 +8,16 @@ const BackButton = dynamic(() => import('./BackButton'), { ssr: false });
 
 export default function RecipeSuggestion() {
   const { pageMode, setPageMode } = useContext(PageContext);
-  const recipeDetailOne: pageModeType = "recipeDetailOne";
+  const RecipeCreateAfter: pageModeType = "RecipeCreateAfter";
   const home: pageModeType = "home"; // 遷移先のパスを指定
 
   const handleInputQuery = () => {
     /* APIたたく */
-    setPageMode(recipeDetailOne);
+    setPageMode(RecipeCreateAfter);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-yellow-100">
+    <div className="flex flex-col items-center justify-center py-10 bg-yellow-100">
       <div className="absolute top-28 left-8">
         <BackButton pageChangeTo={home} /> {/* 戻るボタンを追加 */}
       </div>

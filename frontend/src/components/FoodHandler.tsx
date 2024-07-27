@@ -44,7 +44,7 @@ export default function FoodHandler() {
     setPageMode(fridgePage);
   }
 
-  
+
   type foodsType = {
     food_id: number,
     quantity: number
@@ -64,10 +64,10 @@ export default function FoodHandler() {
   }
 
   const { trigger, isMutating } = useSWRMutation("/fridge", updateFridge)
-  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await trigger({user_id: user.user_id, foods: 
+    await trigger({user_id: user.user_id, foods:
       ingredients.map(ingredient => {return {food_id: 0, quantity: ingredient.quantity}})
     })
     handlePageChange()
