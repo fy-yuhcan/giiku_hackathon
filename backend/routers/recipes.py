@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_session
-from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo, RecipeCreate, RecipePutIn
+from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo, RecipeCreate, RecipePutIn, FoodInRecipe
 from crud.recipes import add_recipe, get_recipes, delete_recipe
 from crud.storages import get_storage
 from crud.recipefood import add_recipe_food, get_recipe_foods
@@ -45,7 +45,9 @@ async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSess
                                                   ))
         
         # RecipeFoodsテーブルに追加する処理
-        # foods = suggestion.foods
+        foods: list[FoodInRecipe] = suggestion.foods
+        for food in foods:
+            await add_recipe_food(session, food.food_id, db_recipe.id, food.quantity)
 
 
         # レスポンスの生成
