@@ -3,7 +3,7 @@ import RecipeSuggestion from './RecipeSuggestion';
 import RecipeButton from './RecipeButton';
 import RecipeWindow from './RecipeWindow';
 import SmallButton from './SmallButton';
-import { PageContext, pageModeType } from '@/context/pageContext';
+import { PageContext, pageModeType } from '../context/pageContext';
 
 export default function RecipeSuggestionComponent() {
 
