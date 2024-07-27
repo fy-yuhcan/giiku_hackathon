@@ -15,7 +15,7 @@ async def add_food_to_fridge(session: AsyncSession, user_id: int, food_id: int, 
     await session.commit()
 
 # user_idから冷蔵庫のすべての食材を取得（foodとjoin）
-async def get_fridge_contents(session: AsyncSession, user_id: int):
+async def get_fridge(session: AsyncSession, user_id: int):
     query = text(
         "SELECT " + 
         "foods.id, foods.name, foods.unit " +
