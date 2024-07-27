@@ -11,7 +11,7 @@ from database import Base
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_Key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     password = Column(String, nullable=False)
 
@@ -21,7 +21,7 @@ class User(Base):
 
 class Food(Base):
     __tablename__ = "foods"
-    id = Column(Integer, primary_Key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     unit = Column(String, nullable=False)
 
@@ -31,7 +31,7 @@ class Food(Base):
 
 class Recipe(Base):
     __tablename__ = "recipes"
-    id = Column(Integer, primary_Key=True)
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     title = Column(String, nullable=False)
     content = Column(String, nullable=False)
@@ -41,7 +41,7 @@ class Recipe(Base):
 
 class RecipeFood(Base):
     __tablename__ = "recipe_foods"
-    id = Column(Integer, primary_Key=True)
+    id = Column(Integer, primary_key=True)
     food_id = Column(Integer, ForeignKey("foods.id"), nullable=False)
     recipe_id = Column(Integer, ForeignKey("recipes.id"), nullable=False)
     quantity = Column(Float, nullable=False)
@@ -50,7 +50,7 @@ class RecipeFood(Base):
 
 class Storage(Base):
     __tablename__ = "storages"
-    id = Column(Integer, primary_Key=True)
+    id = Column(Integer, primary_key=True)
     food_id = Column(Integer, ForeignKey("foods.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     added_at = Column(Timestamp, server_default=current_timestamp())
