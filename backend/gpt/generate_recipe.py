@@ -3,6 +3,7 @@ import os
 import aiohttp
 import asyncio
 import json
+from schemas import StorageWithFoodInfo, RecipeSuggestion
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -45,7 +46,8 @@ mock_data = [
     }
 ]
 
-async def generate_recipe(ingredients):
+async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: int, uses_storages_only: str, comment: str) -> RecipeSuggestion:
+    # uses_storages_only の処理書く
     prompt_message = f"""
     これらの食材を使用して作れるレシピを教えてください。以下は食材のリストです：
 

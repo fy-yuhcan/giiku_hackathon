@@ -4,19 +4,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
 from models import User, Food, Recipe, RecipeFood, Storage
-from schemas import RecipePostIn, RecipeModel
+from schemas import RecipeCreate, RecipeModel
 
 # レシピを追加
-async def add_recipe(session: AsyncSession, recipe: RecipePostIn) -> RecipeModel:
+async def add_recipe(session: AsyncSession, recipe: RecipeCreate) -> RecipeModel:
     query = text(
         "INSERT INTO recipes (user_id, title, content) " +
         "VALUES (:user_id, :title, :content) RETURNING id"
     )
-    result = await session.execute(query, {"user_id": recipe.user_id, "title": recipe.query, "content": recipe.query})
-    recipe_id = result.scalar()
+    result = await session.execute(query, {"user_id": recipe.user_id, "title": recipe.title, "content": recipe.content})
+    recipe_id = result.scalar_one()
     await session.commit()
 
-    return RecipeModel(id=recipe_id, user_id=recipe.user_id, title=recipe.query, content=recipe.query)
+    return RecipeModel(id=recipe_id, user_id=recipe.user_id, title=recipe.title, content=recipe.content)
 
 # user_idからすべてのレシピを取得
 async def get_recipes(session: AsyncSession, user_id: int, num_recipe: int):
