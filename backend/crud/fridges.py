@@ -24,7 +24,7 @@ async def get_fridge_contents(session: AsyncSession, user_id: int):
         "FROM fridges " +
         "LEFT JOIN foods ON fridges.food_id = foods.id " +
         "WHERE fridges.user_id = :user_id " +
-        "GROUP BY fridges.food_id " +
+        "GROUP BY foods.id, foods.name, foods.unit " +
         "ORDER BY earliest_added_at"
     )
     result = await session.execute(query, {"user_id": user_id})
