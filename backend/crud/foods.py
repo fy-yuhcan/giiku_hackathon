@@ -3,8 +3,8 @@ from sqlalchemy.sql.expression import *
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from fastapi import HTTPException
-#from schemas import 
-from models import Food
+from schemas import FoodModel
+# from models import Food
 
 # 食材を一つ追加
 # async def add_food(session: AsyncSession, name: str, unit: str) -> None:
@@ -18,11 +18,12 @@ from models import Food
 #     await session.commit()
 
 # 全ての食材を取得
-async def get_foods(session: AsyncSession) -> list[Food]:
+async def get_foods(session: AsyncSession) -> list[FoodModel]:
     query = text(
         "SELECT * " +
         "FROM foods"
     )
     result = await session.execute(query)
     foods = result.fetchall()
-    return [Food(**row) for row in foods]
+    print(foods)
+    return [FoodModel(**row) for row in foods]
