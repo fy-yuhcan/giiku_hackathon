@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_session
-from schemas import StorageWithFoodInfo, FoodInStorage, StorageCreate
+from schemas import StorageWithFoodInfo, FoodInStorage, StorageCreate, StorageUpdate
 from crud.storages import add_storage, get_storage_summary, get_storage_by_food, delete_storage, update_storage
 
 router = APIRouter(
@@ -36,14 +36,14 @@ async def add_storage_router(storage: StorageCreate, session: AsyncSession = Dep
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# 冷蔵庫の削除を更新
-@router.put("/{storage_id}", response_model=None)
-async def update_storage_router(storage_id: int, quantity: float, session: AsyncSession = Depends(get_session)):
-    try:
-        await update_storage(session, storage_id, quantity)
-        return {"message": "Storage updated"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# 冷蔵庫の食材を更新
+# @router.put("/", response_model=None)
+# async def update_storage_router(storage: StorageUpdate, session: AsyncSession = Depends(get_session)):
+#     try:
+#         await update_storage(session, storage.id, storage.quantity)
+#         return {"message": "Storage updated"}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 # 冷蔵庫の食材を削除
 @router.delete("/{storage_id}", response_model=None)
