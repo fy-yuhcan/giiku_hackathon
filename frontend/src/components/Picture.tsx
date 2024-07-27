@@ -4,7 +4,7 @@ import { FoodDataType } from '../materialType';
 
 export default function Picture({setFoodData}) {
 
-  const DetectionFoodImagePath = "/images";
+  const DetectionFoodImagePath = "/images/";
 
   async function uploadImage(url: string, { arg }) {
     const formData = new FormData();
