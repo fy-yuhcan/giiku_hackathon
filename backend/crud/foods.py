@@ -23,5 +23,6 @@ async def get_foods(session: AsyncSession) -> list[Food]:
         "SELECT * " +
         "FROM foods"
     )
-    await session.execute(query)
-    await session.commit()
+    result = await session.execute(query)
+    foods = result.fetchall()
+    return [Food(**row) for row in foods]
