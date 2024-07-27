@@ -1,6 +1,7 @@
 import openai
 import os
-import requests
+import aiohttp
+import asyncio
 import json
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -44,7 +45,7 @@ mock_data = [
     }
 ]
 
-def generate_recipe(ingredients):
+async def generate_recipe(ingredients):
     prompt_message = f"""
     これらの食材を使用して作れるレシピを教えてください。以下は食材のリストです：
 
@@ -114,8 +115,9 @@ def generate_recipe(ingredients):
         "max_tokens": 500
     }
 
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    response_json = response.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload) as response:
+            response_json = await response.json()
     
     content = response_json["choices"][0]["message"]["content"]
     content = content.strip("```json\n").strip("\n```")
@@ -125,8 +127,9 @@ def generate_recipe(ingredients):
 
 if __name__ == "__main__":
     ingredients = "\n".join([f"{item['name']}: {item['quantity']}{item['unit']}" for item in mock_data])
-    recipe_dict = generate_recipe(ingredients)
+    recipe_dict = asyncio.run(generate_recipe(ingredients))
     print(json.dumps(recipe_dict, indent=4, ensure_ascii=False))
+
 
 
 
