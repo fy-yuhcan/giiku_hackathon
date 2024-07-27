@@ -1,36 +1,34 @@
-from fastapi import APIRouter, UploadFile, HTTPException, Depends
-import shutil
-import os
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from database import get_session
 from gpt.detection import encode_image, detect_food
+import os
+import shutil
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/images",
+    tags=["images"]
+)
 
-@router.post("/images/")
-async def upload_image(upload_file: UploadFile):
+@router.post("/")
+async def upload_image(upload_file: UploadFile = File(...), session: AsyncSession = Depends(get_session)):
     try:
-        # 画像を保存するディレクトリ
-        save_dir = "images"
-        os.makedirs(save_dir, exist_ok=True)
+        # ローカルに画像を保存
+        image_dir = "backend/images"
+        os.makedirs(image_dir, exist_ok=True)
+        file_path = os.path.join(image_dir, upload_file.filename)
         
-        # ファイルパスを指定
-        file_path = os.path.join(save_dir, upload_file.filename)
-        
-        # 画像を保存
-        with open(file_path, 'wb+') as buffer:
+        with open(file_path, "wb") as buffer:
             shutil.copyfileobj(upload_file.file, buffer)
 
-        # 画像をbase64にエンコード
+        # 画像をエンコードして食材を識別
         base64_image = encode_image(upload_file)
-        
-        # OpenAI APIで画像を解析
-        result = detect_food(base64_image)
+        detected_foods = detect_food(base64_image)
 
-        return {
-            "filename": file_path,
-            "type": upload_file.content_type,
-            "result": result
-        }
+        return {"filename": file_path, "type": upload_file.content_type, "result": detected_foods}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
