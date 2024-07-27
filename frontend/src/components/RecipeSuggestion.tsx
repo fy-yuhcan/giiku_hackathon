@@ -62,7 +62,7 @@ export default function RecipeSuggestion() {
     if (data) {
       setSuggestionRecipeId(data.id);
     } else {
-      throw new Error("response not found.")
+      throw new Error("response no found.")
     }
     
     setPageMode(RecipeCreateAfter);

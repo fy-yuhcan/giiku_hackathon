@@ -38,22 +38,19 @@ export default function RecipeSuggestionComponent() {
     .then(res => res.json())
   }
 
+  //遷移ページ指定
   const fridge: pageModeType = "fridge"
+
+  //コンテキスト及びステート初期化
   const { user, setUser } = useContext(UserContext)
   const { pageMode, setPageMode } = useContext(PageContext)
+  const [showRecipe, setShowRecipe] = useState<number>(-1);
+
+  //SWR初期化
   const { data, error, isLoading } = useSWR(`/recipe?user_id=${user.user_id}`, fetcher)
   //if (error) return <div>failed to load</div>
   //if (isLoading) return <div>loading...</div>
 
-  const [showRecipe, setShowRecipe] = useState<number>(-1);
-
-  const ShowRecipe = (recipe_id: number) => {
-    setShowRecipe(recipe_id)
-  }
-
-  const dropRecipe = () => {
-    setShowRecipe(-1)
-  }
 
   //fetcher
   const createSuggestion = async (url: string, {arg}: {arg: RecipePutType}) => {
@@ -72,6 +69,12 @@ export default function RecipeSuggestionComponent() {
     await trigger({user_id: user.user_id, recipe_id: recipe_id})
     setPageMode(fridge)
   }
+  const handleShowRecipe = (recipe_id: number) => {
+    setShowRecipe(recipe_id)
+  }
+  const handleDropRecipe = () => {
+    setShowRecipe(-1)
+  }
 
 
   if (showRecipe > 0) {
@@ -80,7 +83,7 @@ export default function RecipeSuggestionComponent() {
         return (
           <>
             <RecipeWindow content={dummy_data[i].text} />
-            <SmallButton handler={dropRecipe} label={"戻る"} />
+            <SmallButton handler={handleDropRecipe} label={"戻る"} />
             <SmallButton handler={() => handleCooked(showRecipe)} label={"作った！"} />
           </>
         )
@@ -97,7 +100,7 @@ export default function RecipeSuggestionComponent() {
               <div
                 className="bg-white p-4 text-center rounded-lg cursor-pointer hover:bg-gray-200"
                 key={index}
-                onClick={() => ShowRecipe(record.recipe_id)}
+                onClick={() => handleShowRecipe(record.recipe_id)}
               >
                 {record.title}
               </div>
