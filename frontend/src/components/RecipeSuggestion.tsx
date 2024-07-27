@@ -28,7 +28,6 @@ export default function RecipeSuggestion() {
           placeholder="現在の気分や体調を入力してください あっさりしたものが食べたい気分 など…"
         ></textarea>
         <div className="mb-4">
-          <label className="block mb-2">何人前か</label>
           <select className="border rounded p-2 w-full">
             <option value="1">1人前</option>
             <option value="2">2人前</option>

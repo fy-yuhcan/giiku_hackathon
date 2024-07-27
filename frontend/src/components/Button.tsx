@@ -8,14 +8,13 @@ export default function Button({ pageChangeTo, label, icon }) {
     setPageMode(pageChangeTo);
   };
 
-  
+
 
   return (
     <button
       onClick={handlePageChange}
       className="w-64 bg-white border border-gray-300 rounded-lg p-4 flex items-center justify-center space-x-2 hover:bg-gray-200 focus:outline-none shadow-md transition duration-300"
     >
-      <i className={`fas fa-${icon} mr-2`}></i> {/* Font Awesomeのアイコン */}
       <span>{label}</span>
     </button>
   );
