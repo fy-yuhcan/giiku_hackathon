@@ -16,6 +16,7 @@ class StorageModel(StorageBase):
     added_at: datetime
 
 class StorageUpdate(BaseModel):
+    id: int
     quantity: float
 
 class StorageWithFoodInfo(BaseModel):
