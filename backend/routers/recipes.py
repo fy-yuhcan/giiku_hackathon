@@ -38,6 +38,8 @@ async def create_recipe(recipe: RecipePostIn, session: AsyncSession = Depends(ge
 
 #いらないレシピを削除
 @router.delete("/")
-async def update_recipe(recipe_id: int):
-    #処理
-    return 
+async def remove_recipe(recipe_id: int, session: AsyncSession = Depends(get_session)):
+    success = await delete_recipe(session, recipe_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    return {"message": "Recipe deleted successfully"}
