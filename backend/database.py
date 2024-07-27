@@ -30,4 +30,7 @@ Base = declarative_base()
 
 async def get_session() -> AsyncSession:
     async with SessionLocal() as session:
-        yield session
+        try:
+            yield session
+        finally:
+            session.close()
