@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import User, Food, Recipe, RecipeFood, Storage
-from schemas import StorageCreate, StorageUpdate, StorageWithFoodInfo, FoodInStorage
+from schemas import StorageCreate, StorageUpdate, StorageWithFoodInfo, StorageSummaryWithFoodInfo, FoodInStorage
 
 # 冷蔵庫に食材を追加
 async def add_storage(session: AsyncSession, user_id: int, food_id: int, quantity: float):
@@ -17,7 +17,8 @@ async def add_storage(session: AsyncSession, user_id: int, food_id: int, quantit
 async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFoodInfo]:
     query = text(
         "SELECT " + 
-        "foods.id, foods.name, foods.unit, " +
+        "storages.id AS storage_id, " +
+        "foods.id AS food_id, foods.name, foods.unit, " +
         "storages.quantity, storages.added_at " +
         "FROM storages " +
         "LEFT JOIN foods ON storages.food_id = foods.id " +
@@ -29,11 +30,12 @@ async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFo
 
     storage = [
         StorageWithFoodInfo(
-            food_id=row[0],
-            name=row[1],
-            unit=row[2],
-            total_quantity=row[3],
-            earliest_added_at=row[4]
+            storage_id=row[0],
+            food_id=row[1],
+            name=row[2],
+            unit=row[3],
+            quantity=row[4],
+            added_at=row[5]
         )
         for row in storage_results
     ]
@@ -41,10 +43,10 @@ async def get_storage(session: AsyncSession, user_id: int) -> list[StorageWithFo
 
 
 # user_idから冷蔵庫のすべての食材を取得 (同じ食材はまとめる)（foodとjoin）
-async def get_storage_summary(session: AsyncSession, user_id: int) -> list[StorageWithFoodInfo]:
+async def get_storage_summary(session: AsyncSession, user_id: int) -> list[StorageSummaryWithFoodInfo]:
     query = text(
         "SELECT " + 
-        "foods.id, foods.name, foods.unit, " +
+        "foods.id AS food_id, foods.name, foods.unit, " +
         "SUM(storages.quantity) AS total_quantity, " + 
         "MIN(storages.added_at) AS earliest_added_at " +
         "FROM storages " +
@@ -57,7 +59,7 @@ async def get_storage_summary(session: AsyncSession, user_id: int) -> list[Stora
     storage_results = result.fetchall()
 
     storage = [
-        StorageWithFoodInfo(
+        StorageSummaryWithFoodInfo(
             food_id=row[0],
             name=row[1],
             unit=row[2],
