@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from fastapi import HTTPException
 #from schemas import 
-from ..models import Food
+from models import Food
 
 # 食材を一つ追加
 async def add_food(session: AsyncSession, name: str, unit: str) -> None:
