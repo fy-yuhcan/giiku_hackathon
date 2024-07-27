@@ -71,7 +71,7 @@ async def get_storage_summary(session: AsyncSession, user_id: int) -> list[Stora
     return storage
 
 # 冷蔵庫の食材の詳細（それぞれの買った日、残っている量）を取得
-async def get_storage_summary_by_food(session: AsyncSession, user_id: int, food_id: int) -> list[FoodInStorage]:
+async def get_storage_by_food(session: AsyncSession, user_id: int, food_id: int) -> list[FoodInStorage]:
     query = text(
         "SELECT " +
         "storages.id AS storage_id, " +
