@@ -75,7 +75,7 @@ class RecipeBase(BaseModel):
     title: str
     content: str
 
-class RecipeCreate(BaseModel):
+class RecipeCreate(RecipeBase):
     user_id: int
 
 class RecipeModel(RecipeBase):
@@ -87,14 +87,16 @@ class RecipeGetOut(RecipeModel):
 class RecipeRequest(BaseModel):
     user_id: int
     num_servings: int
-    is_in_storage_only: Literal["true",  "false"]
+    uses_storages_only: Literal["true",  "false"]
     comment: str
 
 class RecipeSuggestion(BaseModel):
-    pass
+    title: str
+    foods: list[FoodInRecipe]
+    content: str
 
-class RecipePostOut(RecipeModel):
-    text: Union[str, None] = None
+class RecipePostOut(RecipeSuggestion):
+    id: int
 
 
 # userのスキーマ(?)違ったら変更してください
