@@ -21,14 +21,14 @@ router = APIRouter(
 #     return 
 
 #ユーザーが画像を投稿する
-@router.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
-    try:
-        base64_image = encode_image(file)
-        result = detect_food(base64_image)
-        return {"result": result}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# @router.post("/upload")
+# async def upload_file(file: UploadFile = File(...)):
+#     try:
+#         base64_image = encode_image(file)
+#         result = detect_food(base64_image)
+#         return {"result": result}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 #食材を一つ追加
 # @router.post("/")

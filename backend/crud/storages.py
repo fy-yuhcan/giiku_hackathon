@@ -1,10 +1,37 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import text
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime, timezone
 from models import User, Food, Recipe, RecipeFood, Storage
 from schemas import StorageCreate, StorageUpdate, StorageWithFoodInfo, StorageSummaryWithFoodInfo, FoodInStorage
 
-# 冷蔵庫に食材を追加
+# 冷蔵庫に食材を複数追加
+async def add_storages(session: AsyncSession, storages_create: list[StorageCreate]):
+    storages_create_size = len(storages_create)
+    value_clause = ", ".join(
+        f"(:user_id_{i}, :food_id_{i}, :quantity_{i}, :added_at_{i}, )" for i in range(storages_create_size)
+    )
+
+    query = text(
+        "INSERT INTO storages (user_id, food_id, quantity, added_at) " +
+        "VALUES {values_clause}"
+    )
+
+    params = {
+        key: value
+        for i, storage in enumerate(storages_create)
+        for key, value in {
+            f"user_id_{i}": storage.user_id,
+            f"food_id_{i}": storage.food_id,
+            f"quantity_{i}": storage.quantity,
+            f"added_at_{i}": datetime.now(timezone.utc)
+        }.items()
+    }
+
+    await session.execute(query, params)
+    await session.commit()
+
+# 冷蔵庫に食材を一件追加
 async def add_storage(session: AsyncSession, user_id: int, food_id: int, quantity: float):
     query = text(
         "INSERT INTO storages (user_id, food_id, quantity, added_at) " +

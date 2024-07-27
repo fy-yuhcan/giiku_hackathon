@@ -3,14 +3,21 @@ import base64
 import requests
 import openai
 import os
+import json
+from sqlalchemy.ext.asyncio import AsyncSession
+from crud.foods import get_foods
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
+
+async def load_food_data(session: AsyncSession):
+    foods = await get_foods(session)
+    return {food.name: {"id": food.id, "unit": food.unit} for food in foods}
 
 def encode_image(file: UploadFile):
     file.file.seek(0)  # ファイルの先頭に戻る
     return base64.b64encode(file.file.read()).decode('utf-8')
 
-def detect_food(base64_image):
+def detect_food(base64_image, session: AsyncSession):
     prompt_message = """
     これらの画像に何の食材がそれぞれ何個またはどのくらいの量写っているかJSONのリストで出力してください。
     答えだけを出力してください。
@@ -87,4 +94,21 @@ def detect_food(base64_image):
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
     response.raise_for_status()
 
-    return response.json()
+    detected_foods = response.json()["choices"][0]["message"]["content"]
+    detected_foods = detected_foods.strip("```json\n").strip("\n```")
+    detected_foods = json.loads(detected_foods)
+
+    # 食材データを取得
+    food_data = asyncio.run(load_food_data(session))
+
+    # 食材情報にIDと単位を追加
+    for item in detected_foods:
+        food_name = item["name"]
+        if food_name in food_data:
+            item["food_id"] = food_data[food_name]["id"]
+            item["unit"] = food_data[food_name]["unit"]
+
+    return detected_foods
+
+
+

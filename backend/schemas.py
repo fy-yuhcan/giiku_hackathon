@@ -2,6 +2,39 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Literal, Union, Dict
 
+# Food関連の定義
+class FoodBase(BaseModel):
+    name: str
+    unit: str
+
+class FoodCreate(FoodBase):
+    pass
+
+class FoodModel(FoodBase):
+    id: int
+
+class FoodGetOut(FoodBase):
+    foods: List[FoodModel]
+
+# RecipeFoods (RecipesとFoodsの中間テーブル) 関連のスキーマ
+
+class RecipeFoodBase(BaseModel):
+    food_id: int
+    recipe_id: int
+    quantity: float
+
+class RecipeFoodCreate(RecipeFoodBase):
+    pass
+
+class RecipeFoodModel(RecipeFoodBase):
+    id: int
+
+class FoodInRecipe(BaseModel):
+    food_id: int
+    name: str
+    quantity: int
+    unit: str
+
 # Storageベースクラス
 class StorageBase(BaseModel):
     food_id: int
@@ -11,11 +44,20 @@ class StorageBase(BaseModel):
 class StorageCreate(StorageBase):
     pass
 
+class FoodInStoragePost(BaseModel):
+    food_id: int
+    quantity: int
+
+class StoragePost(BaseModel):
+    user_id: int
+    foods: list[FoodInStoragePost]
+
 class StorageModel(StorageBase):
     id: int
     added_at: datetime
 
 class StorageUpdate(BaseModel):
+    id: int
     quantity: float
 
 class StorageWithFoodInfo(BaseModel):
@@ -57,7 +99,7 @@ class RecipeBase(BaseModel):
     title: str
     content: str
 
-class RecipeCreate(BaseModel):
+class RecipeCreate(RecipeBase):
     user_id: int
 
 class RecipeModel(RecipeBase):
@@ -69,28 +111,20 @@ class RecipeGetOut(RecipeModel):
 class RecipeRequest(BaseModel):
     user_id: int
     num_servings: int
-    is_in_storage_only: Literal["true",  "false"]
+    uses_storages_only: Literal["true",  "false"]
     comment: str
 
 class RecipeSuggestion(BaseModel):
-    pass
+    title: str
+    foods: list[FoodInRecipe]
+    content: str
 
-class RecipePostOut(RecipeModel):
-    text: Union[str, None] = None
-
-# Food関連の定義
-class FoodBase(BaseModel):
-    name: str
-    unit: str
-
-class FoodCreate(FoodBase):
-    pass
-
-class FoodModel(FoodBase):
+class RecipePostOut(RecipeSuggestion):
     id: int
 
-class FoodGetOut(FoodBase):
-    foods: List[FoodModel]
+class RecipePutIn(BaseModel):
+    user_id: int
+    recipe_id: int
 
 # userのスキーマ(?)違ったら変更してください
 class UserBase(BaseModel):
