@@ -25,5 +25,4 @@ async def get_foods(session: AsyncSession) -> list[FoodModel]:
     )
     result = await session.execute(query)
     foods = result.fetchall()
-    print(foods)
-    return [FoodModel(**row) for row in foods]
+    return foods
