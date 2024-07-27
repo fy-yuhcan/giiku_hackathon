@@ -3,86 +3,87 @@ import base64
 import requests
 import openai
 
-openai.api_key = ""
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def encode_image(file: UploadFile):
-  return base64.b64encode(file.file.read()).decode('utf-8')
+    file.file.seek(0)  # ファイルの先頭に戻る
+    return base64.b64encode(file.file.read()).decode('utf-8')
 
 def detect_food(base64_image):
+    prompt_message = """
+    これらの画像に何の食材がそれぞれ何個またはどのくらいの量写っているかJSONのリストで出力してください。
+    答えだけを出力してください。
+    食材の名前は日本語にしてください。
+    JSONのvalueは数値のみで、単位は別のKEYのValueとして持つようにしてください。
 
-  prompt_message = """
-  これらの画像に何の食材がそれぞれ何個またはどのくらいの量写っているかJSONのリストで出力してください。
-  答えだけを出力してください。
-  食材の名前は日本語にしてください。
-  JSONのvalueは数値のみで、単位は別のKEYのValueとして持つようにしてください。
+    例：
+    [
+        {
+            "name": "ピーマン",
+            "quantity": 2,
+            "unit": "個"
+        },
+        {
+            "name": "にんじん",
+            "quantity": 3,
+            "unit": "本"
+        },
+        {
+            "name": "トマト",
+            "quantity": 7,
+            "unit": "個"
+        },
+        {
+            "name": "ブロッコリー",
+            "quantity": 1,
+            "unit": "個"
+        },
+        {
+            "name": "かぼちゃ",
+            "quantity": 1,
+            "unit": "個"
+        },
+        {
+            "name": "ほうれん草",
+            "quantity": 1,
+            "unit": "束"
+        },
+        {
+            "name": "薄力小麦粉",
+            "quantity": 750,
+            "unit": "g"
+        }
+    ]
+    """
 
-  例：
-  [
-    {
-      "name": "ピーマン",
-      "quantity": 2,
-      "unit": "個"
-    },
-    {
-      "name": "にんじん",
-      "quantity": 3,
-      "unit": "本"
-    },
-    {
-      "name": "トマト",
-      "quantity": 7,
-      "unit": "個"
-    },
-    {
-      "name": "ブロッコリー",
-      "quantity": 1,
-      "unit": "個"
-    },
-    {
-      "name": "かぼちゃ",
-      "quantity": 1,
-      "unit": "個"
-    },
-    {
-      "name": "ほうれん草",
-      "quantity": 1,
-      "unit": "束"
-    },
-    {
-      "name": "薄力小麦粉",
-      "quantity": 750,
-      "unit": "g"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {openai.api_key}"
     }
-  ]
-  """
 
-  headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {openai.api_key}"
-  }
-
-  payload = {
-    "model": "gpt-4o-mini",
-    "messages": [
-      {
-        "role": "user",
-        "content": [
-          {
-            "type": "text",
-            "text": prompt_message
-          },
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": f"data:image/jpeg;base64,{base64_image}"
+    payload = {
+        "model": "gpt-4",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": prompt_message
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
             }
-          }
-        ]
-      }
-    ],
-    "max_tokens": 300
-  }
+        ],
+        "max_tokens": 300
+    }
 
-  response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    response.raise_for_status()
 
-  print(response.json())
+    return response.json()
