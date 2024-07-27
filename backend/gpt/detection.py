@@ -63,7 +63,7 @@ def detect_food(base64_image):
     }
 
     payload = {
-        "model": "gpt-4",
+        "model": "gpt-4o-mini",
         "messages": [
             {
                 "role": "user",
