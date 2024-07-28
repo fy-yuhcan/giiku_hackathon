@@ -91,13 +91,20 @@ async def detect_food(base64_image, session: AsyncSession):
     """
     GPT呼び出し節約のため
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload) as response:
+    async with aiohttp.ClientSession() as async_session:
+        async with async_session.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload) as response:
             response_json = await response.json()
-    detected_foods =response_json["choices"][0]["message"]["content"]
-    detected_foods = detected_foods.strip("```json\n").strip("\n```")
-    detected_foods = json.loads(detected_foods)
+            detected_foods =response_json["choices"][0]["message"]["content"]
+            detected_foods = detected_foods.strip("```json\n").strip("\n```")
+            detected_foods = json.loads(detected_foods)
+
     """
+    
+    # 全件取得した食品データを参照してIDを割り振る
+    foods = await get_foods(session)
+    food_data = {food.name: {"id": food.id, "unit": food.unit} for food in foods}
+    
+
     detected_foods = [
         {'name': 'スイカ', 'quantity': 1, 'unit': '個'},
         {'name': 'メロン', 'quantity': 1, 'unit': '個'},
@@ -107,12 +114,7 @@ async def detect_food(base64_image, session: AsyncSession):
         {'name': '洋梨', 'quantity': 1, 'unit': '個'},
         {'name': '梨', 'quantity': 1, 'unit': '個'}
     ]
-    
 
-
-    # 全件取得した食品データを参照してIDを割り振る
-    foods = await get_foods(session)
-    food_data = {food.name: {"id": food.id, "unit": food.unit} for food in foods}
 
     for item in detected_foods:
         food_name = item["name"]
@@ -121,6 +123,12 @@ async def detect_food(base64_image, session: AsyncSession):
             item["unit"] = food_data[food_name]["unit"]
 
     return detected_foods
+
+
+    
+
+
+    
 
     
 
