@@ -30,8 +30,7 @@ export default function FridgeComponent() {
   const { user, setUser } = useContext(UserContext);
 
   //SWR初期化
-  const { data, error, isLoading } = useSWR(`http://localhost:8000/storage/${user.user_id}`, fetcher)
-  console.log(data)
+  const { data, error, isLoading } = useSWR(`http://127.0.0.1:8000/storage/${user.user_id}`, fetcher)
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading...</div>
 
@@ -49,13 +48,13 @@ export default function FridgeComponent() {
               </tr>
             </thead>
             <tbody>
-              {mockData.map((item: StorageGetType, index: number) => (
+              {data?data.map((item: StorageGetType, index: number) => (
                 <tr key={index}>
                   <td className="border-b border-gray-200 p-4">{item.name}</td>
-                  <td className="border-b border-gray-200 p-4 text-right">{item.quantity}</td>
+                  <td className="border-b border-gray-200 p-4 text-right">{item.total_quantity}</td>
                   <td className="border-b border-gray-200 p-4">{item.unit}</td>
                 </tr>
-              ))}
+              )):[]}
             </tbody>
           </table>
         </div>

@@ -33,7 +33,6 @@ export default function Picture() {
       setPreviewSrc(URL.createObjectURL(file));
       try {
         const result = await trigger({ file });
-        console.log(result)
         if (result) {
           setFoodData(result["result"]);
         } else {

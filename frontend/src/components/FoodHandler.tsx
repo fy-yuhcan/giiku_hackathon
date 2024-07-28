@@ -6,7 +6,7 @@ import { PageContext, pageModeType } from '../context/pageContext';
 import useSWRMutation from 'swr/mutation';
 import { UserContext } from '../context/userContext';
 import BackButton from './BackButton'; // BackButtonコンポーネントをインポート
-import { FoodDataType } from '../materialType';
+import { FoodType } from '../materialType';
 import { FoodContext } from '../context/foodContext';
 
 
@@ -58,7 +58,7 @@ export default function FoodHandler() {
   }
 
 
-  const { trigger, isMutating } = useSWRMutation("/storage/", updateFridge)
+  const { trigger, isMutating } = useSWRMutation("http://127.0.0.1:8000/storage/", updateFridge)
   
   const handleSubmit = async () => {
     const foods = FoodData.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})

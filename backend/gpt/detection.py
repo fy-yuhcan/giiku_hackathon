@@ -99,20 +99,14 @@ async def detect_food(base64_image, session: AsyncSession):
             detected_foods = json.loads(detected_foods)
 
     """
-    
+
     # 全件取得した食品データを参照してIDを割り振る
     foods = await get_foods(session)
     food_data = {food.name: {"id": food.id, "unit": food.unit} for food in foods}
     
 
     detected_foods = [
-        {'name': 'スイカ', 'quantity': 1, 'unit': '個'},
-        {'name': 'メロン', 'quantity': 1, 'unit': '個'},
         {'name': 'りんご', 'quantity': 2, 'unit': '個'},
-        {'name': 'オレンジ', 'quantity': 1, 'unit': '個'},
-        {'name': 'グレープフルーツ', 'quantity': 1, 'unit': '個'},
-        {'name': '洋梨', 'quantity': 1, 'unit': '個'},
-        {'name': '梨', 'quantity': 1, 'unit': '個'}
     ]
 
 

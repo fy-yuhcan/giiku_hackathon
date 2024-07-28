@@ -41,10 +41,9 @@ export type RecipePutType = {
 }
 
 export type StorageGetType = {
-    storage_id: number,
     food_id: number,
     name: string,
     unit: string,
-    quantity: number,
-    added_at: string
+    total_quantity: number,
+    earliest_added_at: string
 }

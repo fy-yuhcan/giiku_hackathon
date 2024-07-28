@@ -61,7 +61,7 @@ export default function RecipeSuggestionComponent() {
   }
 
   //useSWR定義
-  const { trigger, isMutating } = useSWRMutation(`http://localhost:8000/recipe/`, createSuggestion)
+  const { trigger, isMutating } = useSWRMutation(`http://127.0.0.1:8000/recipe/`, createSuggestion)
 
 
   //「作った」ボタンを押したらapiを呼び出し
