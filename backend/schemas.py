@@ -20,13 +20,12 @@ class FoodGetOut(FoodBase):
 
 class RecipeFoodBase(BaseModel):
     food_id: int
-    recipe_id: int
     quantity: float
 
 class RecipeFoodCreate(RecipeFoodBase):
-    pass
+    recipe_id: int
 
-class RecipeFoodModel(RecipeFoodBase):
+class RecipeFoodModel(RecipeFoodCreate):
     id: int
 
 class FoodInRecipe(BaseModel):
@@ -80,6 +79,12 @@ class FoodInStorage(BaseModel):
     food_id: int
     name: str
     unit: str
+    added_at: datetime
+    quantity: float
+
+class StorageFood(BaseModel):
+    id: int
+    food_id: int
     added_at: datetime
     quantity: float
 
