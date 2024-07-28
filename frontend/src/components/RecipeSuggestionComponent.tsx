@@ -47,7 +47,7 @@ export default function RecipeSuggestionComponent() {
   const [showRecipe, setShowRecipe] = useState<number>(-1);
 
   //SWR初期化
-  const { data, error, isLoading } = useSWR(`/recipe?user_id=${user.user_id}`, fetcher)
+  const { data, error, isLoading } = useSWR(`http://localhost:8000/recipe/${user.user_id}`, fetcher)
   //if (error) return <div>failed to load</div>
   //if (isLoading) return <div>loading...</div>
 
@@ -61,7 +61,7 @@ export default function RecipeSuggestionComponent() {
   }
 
   //useSWR定義
-  const { trigger, isMutating } = useSWRMutation("/recipe/", createSuggestion)
+  const { trigger, isMutating } = useSWRMutation(`http://localhost:8000/recipe/`, createSuggestion)
 
 
   //「作った」ボタンを押したらapiを呼び出し

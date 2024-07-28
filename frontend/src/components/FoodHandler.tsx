@@ -7,26 +7,27 @@ import useSWRMutation from 'swr/mutation';
 import { UserContext } from '../context/userContext';
 import BackButton from './BackButton'; // BackButtonコンポーネントをインポート
 import { FoodDataType } from '../materialType';
+import { FoodContext } from '../context/foodContext';
 
 
 
-export default function FoodHandler({FoodData}) {
-  const [ingredients, setIngredients] = useState<FoodDataType[]>(FoodData);
+export default function FoodHandler() {
+  const  { FoodData, setFoodData } = useContext(FoodContext);
 
   //食材の追加
   const handleAddIngredient = () => {
-    setIngredients([...ingredients, {food_id: 0, name: '', quantity: 0, unit: 'g' }]);
+    setFoodData([...FoodData, {food_id: 0, name: '', quantity: 0, unit: 'g' }]);
   };
 
   //すでにある食材の変更
   const handleChange = (index: number, field: string, value: string | number) => {
-    const newIngredients = [...ingredients];
+    const newFoodData = [...FoodData];
     if (field === "quantity") {
-      newIngredients[index][field] = parseFloat(value);
+      newFoodData[index][field] = parseFloat(value);
     } else {
-      newIngredients[index][field] = value;
+      newFoodData[index][field] = value;
     }
-    setIngredients(newIngredients);
+    setFoodData(newFoodData);
   };
 
   //保存 & 冷蔵庫ページに移動
@@ -60,7 +61,7 @@ export default function FoodHandler({FoodData}) {
   
   const handleSubmit = async () => {
     await trigger({user_id: user.user_id, foods: 
-      ingredients.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})
+      FoodData.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})
     })
     handlePageChange()
   };
@@ -76,7 +77,7 @@ export default function FoodHandler({FoodData}) {
           <label className="col-span-1 text-right">食材名</label>
           <label className="col-span-1 text-right">数</label>
           <label className="col-span-1 text-right">単位</label>
-          {ingredients.map((ingredient, index) => (
+          {FoodData.map((ingredient, index) => (
             <React.Fragment key={index}>
               <input
                 type="text"

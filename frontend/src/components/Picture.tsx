@@ -1,22 +1,23 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import useSWRMutation from 'swr/mutation';
 import { FoodDataType } from '../materialType';
+import { FoodContext } from '../context/foodContext';
 
-export default function Picture({ setFoodData }) {
-  const DetectionFoodImagePath = "/images/";
+
+export default function Picture() {
+
+  const { FoodData, setFoodData } = useContext(FoodContext);
+
+  const DetectionFoodImagePath = "http://127.0.0.1:8000/images/";
 
   async function uploadImage(url: string, { arg }) {
     const formData = new FormData();
     formData.append('upload_file', arg.file);
-    const response = await fetch(url, {
+    //写真をバックエンドに保存するapiにアクセス
+    return await fetch(url, {
       method: "POST",
       body: formData,
-    });
-    return response.json();
-  }
-
-  const handleChangeFoodData = (newFoodData: FoodDataType[]) => {
-    setFoodData(newFoodData);
+    })
   }
 
   const { trigger, data, error } = useSWRMutation(DetectionFoodImagePath, uploadImage);
@@ -32,13 +33,16 @@ export default function Picture({ setFoodData }) {
       try {
         const result = await trigger({ file });
         if (result) {
-          handleChangeFoodData(result.result);
-        }
-      } catch (e) {
-        console.log(e);
-      }
+          console.log(result["result"])
+          setFoodData(result["result"])
+        } else {
+          console.log("data not found.")
+      } 
+    } catch (e) {
+      console.log(e);
     }
   };
+}
 
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -46,14 +50,7 @@ export default function Picture({ setFoodData }) {
     if (file) {
       setPreviewSrc(URL.createObjectURL(file));
       fileInputRef.current.files = event.dataTransfer.files;
-      try {
-        const result = await trigger({ file });
-        if (result) {
-          handleChangeFoodData(result.result);
-        }
-      } catch (e) {
-        console.log(e);
-      }
+      await trigger({ file });
     }
   };
 
@@ -79,4 +76,5 @@ export default function Picture({ setFoodData }) {
     </div>
   );
 }
+
 

@@ -30,7 +30,7 @@ export default function RecipeCreateAfter() {
   }
 
   //useSWR定義
-  const { trigger, data, error } = useSWRMutation("/recipe/", createSuggestion)
+  const { trigger, data, error } = useSWRMutation("http:/localhost:8000/recipe/", createSuggestion)
 
 
   //「作った」ボタンを押したらapiを呼び出し

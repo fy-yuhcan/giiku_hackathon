@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import FoodHandler from './FoodHandler';
-import SmallButton from './SmallButton';
 import Picture from './Picture';
 import { FoodDataType } from '../materialType';
+import { FoodProvider } from '../context/foodContext';
 
 export default function AddFoodByImageComponent() {
-    const [FoodData, setFoodData] = useState<FoodDataType[]>([])
-    
     return (
       <>
+        <FoodProvider>
         <div>
-          <Picture setFoodData={setFoodData}/>
-          <FoodHandler FoodData={FoodData}/>
+          <Picture/>
+          <FoodHandler/>
         </div>
+        </FoodProvider>
       </>
     );
 }

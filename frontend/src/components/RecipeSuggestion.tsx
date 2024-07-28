@@ -47,7 +47,7 @@ export default function RecipeSuggestion() {
   }
 
   //useSWR定義
-  const { trigger, data, error } = useSWRMutation("/recipe/", createSuggestion)
+  const { trigger, data, error } = useSWRMutation("http:/localhost/recipe/", createSuggestion)
 
   //作成ボタン押したときの処理
   const handleSubmit = async () => {

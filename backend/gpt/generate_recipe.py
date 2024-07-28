@@ -110,10 +110,13 @@ async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: 
     async with aiohttp.ClientSession() as session:
         async with session.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload) as response:
             response_json = await response.json()
+    print("\nresponse_json:", response_json)
     content = response_json["choices"][0]["message"]["content"]
+    print("\ncontent:", content)
     content = content.strip("```json\n").strip("\n```")
+    print("\ncontent:", content)
     recipe_dict = json.loads(content)
-
+    print("\nrecipe_dict:", recipe_dict)
     # RecipeSuggestionモデルに変換
     foods = [FoodInRecipe(food_id=item["food_id"], name=item["name"], quantity=item["quantity"], unit=item["unit"]) for item in recipe_dict["foods"]]
     recipe_suggestion = RecipeSuggestion(

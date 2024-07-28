@@ -30,7 +30,7 @@ export default function FridgeComponent() {
   const { user, setUser } = useContext(UserContext);
 
   //SWR初期化
-  const { data, error, isLoading } = useSWR(`/storage/${user.user_id}`, fetcher)
+  const { data, error, isLoading } = useSWR(`http://localhost:8000/storage/${user.user_id}`, fetcher)
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading...</div>
 
