@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 # 過去にChatGPTに提案してもらったレシピを表示
-@router.get("/", response_model=list[RecipeModel])
+@router.get("/{user_id}", response_model=list[RecipeModel])
 async def get_recipes_router(user_id: int, session: AsyncSession = Depends(get_session)):
     try:
         return await get_recipes(session, user_id)
@@ -66,16 +66,18 @@ async def use_recipe(recipe: RecipePutIn, session: AsyncSession = Depends(get_se
         # storageの対応するfoodを取得
         for recipe_food in recipe_foods:
             recipe_quantity = recipe_food.quantity
-            storage_foods: list[StorageFood] = get_storage_food(session, recipe.user_id, recipe_food.food_id)
+            storage_foods: list[StorageFood] = await get_storage_food(session, recipe.user_id, recipe_food.food_id)
+
             for storage_food in storage_foods:
                 storage_quantity = storage_food.quantity
+
                 if recipe_quantity == 0:
                     break
                 elif storage_quantity <= recipe_quantity:
                     # delete
                     await delete_storage(session, storage_food.id)
                     recipe_quantity -= storage_quantity
-                else:
+                else:   # recipe_quantity < storage_quantity
                     # subtract
                     updated_quantity = storage_quantity - recipe_quantity
                     # update

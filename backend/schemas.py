@@ -45,7 +45,7 @@ class StorageCreate(StorageBase):
 
 class FoodInStoragePost(BaseModel):
     food_id: int
-    quantity: int
+    quantity: float
 
 class StoragePost(BaseModel):
     user_id: int
