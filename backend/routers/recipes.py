@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_session
-from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo, RecipeCreate, RecipePutIn, FoodInRecipe
+from schemas import RecipeGetOut, RecipePostOut, RecipeRequest, RecipeModel, RecipeSuggestion, StorageWithFoodInfo, RecipeCreate, RecipePutIn, FoodInRecipe, RecipeFoodBase, FoodInStorage, StorageFood
 from crud.recipes import add_recipe, get_recipes, delete_recipe
-from crud.storages import get_storage
-from crud.recipefood import add_recipe_food, get_recipe_foods
+from crud.storages import get_storage, get_storage_by_food, get_storage_food, delete_storage, update_storage
+from crud.recipefood import add_recipe_food, get_recipe_foods_info, get_recipe_foods
 from gpt.generate_recipe import generate_recipe
 
 router = APIRouter(
@@ -64,7 +64,28 @@ async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSess
 @router.put("/")
 async def use_recipe(recipe: RecipePutIn, session: AsyncSession = Depends(get_session)):
     try:
-        pass
+        # recipe_idからrecipe_foodsを取得
+        recipe_foods: list[RecipeFoodBase] = await get_recipe_foods(session, recipe.recipe_id)
+        # storageの対応するfoodを取得
+        for recipe_food in recipe_foods:
+            recipe_quantity = recipe_food.quantity
+            storage_foods: list[StorageFood] = get_storage_food(session, recipe.user_id, recipe_food.food_id)
+            for storage_food in storage_foods:
+                storage_quantity = storage_food.quantity
+                if recipe_quantity == 0:
+                    break
+                elif storage_quantity <= recipe_quantity:
+                    # delete
+                    await delete_storage(session, storage_food.id)
+                    recipe_quantity -= storage_quantity
+                else:
+                    # subtract
+                    updated_quantity = storage_quantity - recipe_quantity
+                    # update
+                    await update_storage(session, storage_food.id, updated_quantity)
+                    break
+                    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
