@@ -10,7 +10,7 @@ export default function Picture() {
 
   const DetectionFoodImagePath = "http://127.0.0.1:8000/images/";
 
-  async function uploadImage(url: string, { arg }) {
+  async function uploadImage(url: string, { arg }) : Promise<Response> {
     const formData = new FormData();
     formData.append('upload_file', arg.file);
     //写真をバックエンドに保存するapiにアクセス
@@ -20,7 +20,7 @@ export default function Picture() {
     })
   }
 
-  const { trigger, data, error } = useSWRMutation(DetectionFoodImagePath, uploadImage);
+  const { trigger, data, error, isMutating } = useSWRMutation(DetectionFoodImagePath, uploadImage);
 
   const [previewSrc, setPreviewSrc] = useState(null);
   const fileInputRef = useRef(null);
@@ -32,8 +32,9 @@ export default function Picture() {
       setPreviewSrc(URL.createObjectURL(file));
       try {
         const result = await trigger({ file });
+        console.log(result)
+        console.log(data)
         if (result) {
-          console.log(result["result"])
           setFoodData(result["result"])
         } else {
           console.log("data not found.")

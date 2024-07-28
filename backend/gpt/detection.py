@@ -1,3 +1,4 @@
+import aiohttp
 from fastapi import UploadFile
 import base64
 import requests
@@ -86,12 +87,28 @@ async def detect_food(base64_image, session: AsyncSession):
         "max_tokens": 300
     }
 
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    response.raise_for_status()
 
-    detected_foods = response.json()["choices"][0]["message"]["content"]
+    """
+    GPT呼び出し節約のため
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload) as response:
+            response_json = await response.json()
+    detected_foods =response_json["choices"][0]["message"]["content"]
     detected_foods = detected_foods.strip("```json\n").strip("\n```")
     detected_foods = json.loads(detected_foods)
+    """
+    detected_foods = [
+        {'name': 'スイカ', 'quantity': 1, 'unit': '個'},
+        {'name': 'メロン', 'quantity': 1, 'unit': '個'},
+        {'name': 'りんご', 'quantity': 2, 'unit': '個'},
+        {'name': 'オレンジ', 'quantity': 1, 'unit': '個'},
+        {'name': 'グレープフルーツ', 'quantity': 1, 'unit': '個'},
+        {'name': '洋梨', 'quantity': 1, 'unit': '個'},
+        {'name': '梨', 'quantity': 1, 'unit': '個'}
+    ]
+    
+
 
     # 全件取得した食品データを参照してIDを割り振る
     foods = await get_foods(session)
@@ -105,6 +122,7 @@ async def detect_food(base64_image, session: AsyncSession):
 
     return detected_foods
 
+    
 
 
 

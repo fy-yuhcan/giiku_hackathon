@@ -2,23 +2,24 @@
 
 import React from 'react';
 import { useState, createContext, ReactNode } from "react";
+import { RecipePostResponseType } from '../materialType';
 
-export type SuggestionRecipeIdType = {
-  suggestionRecipeId: number;
-  setSuggestionRecipeId: (pageMode: number) => void;
+export type RecipePostResponseContextType = {
+  recipePostResponse: RecipePostResponseType;
+  setRecipePostResponse: (recipePostResponse: RecipePostResponseType) => void;
 }
 
-export const SuggestionRecipeIdContext = createContext<SuggestionRecipeIdType>({
-    suggestionRecipeId: -1, 
-    setSuggestionRecipeId: (suggestionRecipeId) => suggestionRecipeId
+export const RecipePostResponseContext = createContext<RecipePostResponseContextType>({
+  recipePostResponse: null,
+  setRecipePostResponse: (recipePostResponse) => recipePostResponse
 });
 
-export const SuggestionRecipeIdContextProvider = ({children}) => {
-    const [suggestionRecipeId, setSuggestionRecipeId] = useState<number>(-1)
+export const RecipePostResponseProvider = ({children}) => {
+    const [recipePostResponse, setRecipePostResponse] = useState<RecipePostResponseType>(null)
 
   return (
-    <SuggestionRecipeIdContext.Provider value={{suggestionRecipeId, setSuggestionRecipeId}}>
+    <RecipePostResponseContext.Provider value={{recipePostResponse, setRecipePostResponse}}>
       {children}
-    </SuggestionRecipeIdContext.Provider>
+    </RecipePostResponseContext.Provider>
   );
 }

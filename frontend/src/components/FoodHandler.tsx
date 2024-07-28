@@ -60,9 +60,11 @@ export default function FoodHandler() {
   const { trigger, isMutating } = useSWRMutation("/storage/", updateFridge)
   
   const handleSubmit = async () => {
-    await trigger({user_id: user.user_id, foods: 
-      FoodData.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})
-    })
+    const data = {
+      user_id: user.user_id, 
+      foods: FoodData.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})
+    }
+    await trigger(data)
     handlePageChange()
   };
 

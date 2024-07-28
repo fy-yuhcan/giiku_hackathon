@@ -1,11 +1,11 @@
 import internal from "stream"
 
-export type FoodDataType = {
+export type FoodType = {
     food_id: number,
     name: string,
     quantity: number,
     unit: "個" | "g" | "kg" | "ml" | "l" | "本" | "袋"
-  }
+}
 
 export type StoragePostType = {
     user_id: number,
@@ -21,11 +21,18 @@ export interface FoodItem {
     unit: "個" | "g" | "kg" | "ml" | "l" | "本" | "袋";
   }
 
-export type RecipePostType = {
+export type RecipePostRequestType = {
     user_id: number,
     num_servings: number,
-    uses_storages_only: "true" | "false",
+    uses_storages_only: string,
     comment: string
+}
+
+export type RecipePostResponseType = {
+    title: string,
+    foods: FoodType[]
+    content: string,
+    id: number
 }
 
 export type RecipePutType = {

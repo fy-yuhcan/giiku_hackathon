@@ -21,9 +21,9 @@ const mockData: FoodItem[] = [
 export default function FridgeComponent() {
 
   //fetcher
-  const fetcher = (url: string) => {
-    fetch(url)
-    .then(res => res.json())
+  const fetcher = async (url: string) => {
+    const res = await fetch(url)
+    return res.json()
   }
 
   //context初期化
@@ -31,6 +31,7 @@ export default function FridgeComponent() {
 
   //SWR初期化
   const { data, error, isLoading } = useSWR(`http://localhost:8000/storage/${user.user_id}`, fetcher)
+  console.log(data)
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading...</div>
 
@@ -48,7 +49,7 @@ export default function FridgeComponent() {
               </tr>
             </thead>
             <tbody>
-              {data.map((item: StorageGetType, index: number) => (
+              {mockData.map((item: StorageGetType, index: number) => (
                 <tr key={index}>
                   <td className="border-b border-gray-200 p-4">{item.name}</td>
                   <td className="border-b border-gray-200 p-4 text-right">{item.quantity}</td>
