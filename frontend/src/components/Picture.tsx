@@ -14,13 +14,14 @@ export default function Picture() {
     const formData = new FormData();
     formData.append('upload_file', arg.file);
     //写真をバックエンドに保存するapiにアクセス
-    return await fetch(url, {
+    const res = await fetch(url, {
       method: "POST",
       body: formData,
     })
+    return res.json()
   }
 
-  const { trigger, data, error, isMutating } = useSWRMutation(DetectionFoodImagePath, uploadImage);
+  const { trigger, isMutating } = useSWRMutation(DetectionFoodImagePath, uploadImage);
 
   const [previewSrc, setPreviewSrc] = useState(null);
   const fileInputRef = useRef(null);
@@ -33,12 +34,11 @@ export default function Picture() {
       try {
         const result = await trigger({ file });
         console.log(result)
-        console.log(data)
         if (result) {
-          setFoodData(result["result"])
+          setFoodData(result["result"]);
         } else {
           console.log("data not found.")
-      } 
+      }
     } catch (e) {
       console.log(e);
     }

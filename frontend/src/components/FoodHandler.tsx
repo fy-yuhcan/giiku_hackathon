@@ -49,20 +49,22 @@ export default function FoodHandler() {
           quantity: number
       }[]
   }}) {
-    fetch(url, {
+    const res = await fetch(url, {
       method: "POST",
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(arg)
     })
-    .then(res => res.json());
+    return res.json()
   }
 
 
   const { trigger, isMutating } = useSWRMutation("/storage/", updateFridge)
   
   const handleSubmit = async () => {
+    const foods = FoodData.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})
     const data = {
       user_id: user.user_id, 
-      foods: FoodData.map(ingredient => {return {food_id: ingredient.food_id, quantity: ingredient.quantity}})
+      foods: foods
     }
     await trigger(data)
     handlePageChange()

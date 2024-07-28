@@ -63,7 +63,6 @@ export default function RecipeSuggestion() {
       uses_storages_only: refIsUseStorageOnly.current,
       comment: refComment.current
     })
-    console.log(res)
 
     //チャットGPTに投げた後の処理
     if (res) {
