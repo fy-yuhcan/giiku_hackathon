@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { FoodItem } from '../materialType';
+import React, { useContext } from 'react';
+import { FoodItem, StorageGetType } from '../materialType';
+import { UserContext } from '../context/userContext';
+import useSWR from 'swr';
 
 const mockData: FoodItem[] = [
   { name: 'とりもも', quantity: 200, unit: 'g' },
@@ -17,15 +19,20 @@ const mockData: FoodItem[] = [
 ];
 
 export default function FridgeComponent() {
-  const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
 
-  useEffect(() => {
-    // 実際にはデータベースからデータをフェッチします
-    // fetch('/api/food-items')
-    //   .then(response => response.json())
-    //   .then(data => setFoodItems(data));
-    setFoodItems(mockData);
-  }, []);
+  //fetcher
+  const fetcher = (url: string) => {
+    fetch(url)
+    .then(res => res.json())
+  }
+
+  //context初期化
+  const { user, setUser } = useContext(UserContext);
+
+  //SWR初期化
+  const { data, error, isLoading } = useSWR(`/storage/${user.user_id}`, fetcher)
+  if (error) return <div>failed to load</div>
+  if (isLoading) return <div>loading...</div>
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-cream-light">
@@ -41,7 +48,7 @@ export default function FridgeComponent() {
               </tr>
             </thead>
             <tbody>
-              {foodItems.map((item, index) => (
+              {data.map((item: StorageGetType, index: number) => (
                 <tr key={index}>
                   <td className="border-b border-gray-200 p-4">{item.name}</td>
                   <td className="border-b border-gray-200 p-4 text-right">{item.quantity}</td>

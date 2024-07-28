@@ -16,8 +16,6 @@ router = APIRouter(
 async def get_recipes_router(user_id: int, session: AsyncSession = Depends(get_session)):
     try:
         return await get_recipes(session, user_id)
-        # return {"recipes": recipes}
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -48,7 +46,6 @@ async def create_recipe_router(recipe_request: RecipeRequest, session: AsyncSess
         foods: list[FoodInRecipe] = suggestion.foods
         for food in foods:
             await add_recipe_food(session, food.food_id, db_recipe.id, food.quantity)
-
 
         # レスポンスの生成
         return RecipePostOut(
@@ -99,4 +96,5 @@ async def delete_recipe_router(recipe_id: int, session: AsyncSession = Depends(g
         return {"message": "Recipe deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 

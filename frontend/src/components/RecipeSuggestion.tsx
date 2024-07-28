@@ -1,18 +1,70 @@
 import dynamic from 'next/dynamic';
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { PageContext, pageModeType } from '../context/pageContext';
 import SmallButton from './SmallButton';
+import { RecipePostType } from '../materialType';
+import { UserContext } from '../context/userContext';
+import useSWRMutation from 'swr/mutation';
+import { SuggestionRecipeIdContext } from '../context/recipeContext';
 
 // BackButtonコンポーネントを動的にインポート（クライアントサイドでのみ使用）
 const BackButton = dynamic(() => import('./BackButton'), { ssr: false });
 
 export default function RecipeSuggestion() {
-  const { pageMode, setPageMode } = useContext(PageContext);
-  const RecipeCreateAfter: pageModeType = "RecipeCreateAfter";
-  const home: pageModeType = "home"; // 遷移先のパスを指定
 
-  const handleInputQuery = () => {
-    /* APIたたく */
+  //context初期化
+  const { pageMode, setPageMode } = useContext(PageContext);
+  const { user, setUser } = useContext(UserContext);
+  const { suggestionRecipeId, setSuggestionRecipeId } = useContext(SuggestionRecipeIdContext);
+
+  //ref初期化
+  const refNumServings = useRef(1)
+  const refIsUseStorageOnly = useRef<"true"|"false">("true")
+  const refComment = useRef("")
+
+  // 遷移先のパスを指定
+  const RecipeCreateAfter: pageModeType = "RecipeCreateAfter";
+  const home: pageModeType = "home"; 
+
+
+  //refの値書き換えハンドラたち
+  const handleChangeServings = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    refNumServings.current = parseInt(event.target.value)
+  }
+  const handleIsUseStorageOnly = (event: React.ChangeEvent<HTMLInputElement>) => {
+      refIsUseStorageOnly.current = event.target.checked?"false":"true"
+  }
+  const handleComment = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    refComment.current = event.target.value
+  }
+
+  //fetcher
+  const createSuggestion = async (url: string, {arg}: {arg: RecipePostType}) => {
+    await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(arg)
+    })
+  }
+
+  //useSWR定義
+  const { trigger, data, error } = useSWRMutation("/recipe/", createSuggestion)
+
+  //作成ボタン押したときの処理
+  const handleSubmit = async () => {
+    trigger({
+      user_id: user.user_id,
+      num_servings: refNumServings.current,
+      uses_storages_only: refIsUseStorageOnly.current,
+      comment: refComment.current
+    })
+
+    //チャットGPTに投げた後の処理
+    if (data) {
+      setSuggestionRecipeId(data.id);
+    } else {
+      throw new Error("response no found.")
+    }
+    
     setPageMode(RecipeCreateAfter);
   };
 
@@ -26,9 +78,10 @@ export default function RecipeSuggestion() {
         <textarea
           className="border rounded p-2 mb-4 w-full h-24"
           placeholder="現在の気分や体調を入力してください あっさりしたものが食べたい気分 など…"
-        ></textarea>
+          onChange={(event) => handleComment(event)}
+        />
         <div className="mb-4">
-          <select className="border rounded p-2 w-full">
+          <select className="border rounded p-2 w-full" onChange={(event) => handleChangeServings(event)}>
             <option value="1">1人前</option>
             <option value="2">2人前</option>
             <option value="3">3人前</option>
@@ -37,9 +90,9 @@ export default function RecipeSuggestion() {
           </select>
         </div>
         <div className="flex items-center justify-center mb-4">
-          <SmallButton handler={handleInputQuery} label={"作成!"} />
+          <SmallButton handler={handleSubmit} label={"作成!"} />
           <label className="ml-2">
-            <input type="checkbox" className="mr-1" />
+            <input type="checkbox" className="mr-1" onChange={(event) => handleIsUseStorageOnly(event)}/>
             冷蔵庫にある食材のみを使う
           </label>
         </div>
