@@ -3,7 +3,7 @@ from sqlalchemy.sql.expression import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 from models import User, Food, Recipe, RecipeFood, Storage
-from schemas import StorageCreate, StorageUpdate, StorageWithFoodInfo, StorageSummaryWithFoodInfo, FoodInStorage
+from schemas import StorageCreate, StorageUpdate, StorageWithFoodInfo, StorageSummaryWithFoodInfo, FoodInStorage, StorageFood
 
 # 冷蔵庫に食材を複数追加
 async def add_storages(session: AsyncSession, storages_create: list[StorageCreate]):
@@ -14,7 +14,7 @@ async def add_storages(session: AsyncSession, storages_create: list[StorageCreat
 
     query = text(
         "INSERT INTO storages (user_id, food_id, quantity, added_at) " +
-        "VALUES {values_clause}"
+        "VALUES {value_clause}"
     )
 
     params = {
@@ -120,6 +120,31 @@ async def get_storage_by_food(session: AsyncSession, user_id: int, food_id: int)
             food_id=row[1],
             name=row[2],
             unit=row[3],
+            added_at=row[4],
+            quantity=row[5]
+        )
+        for row in storage_foods_results
+    ]
+    return storage_foods
+
+# 冷蔵庫の食材の詳細（それぞれの買った日、残っている量）を取得（名前、単位はなし）
+async def get_storage_food(session: AsyncSession, user_id: int, food_id: int) -> list[StorageFood]:
+    query = text(
+        "SELECT " +
+        "id, food_id, " + 
+        "added_at, quantity " +
+        "FROM storages " +
+        "WHERE user_id = :user_id " +
+        "AND food_id = :food_id " +
+        "ORDER BY added_at"
+    )
+    result = await session.execute(query, {"user_id": user_id, "food_id": food_id})
+    storage_foods_results = result.fetchall()
+
+    storage_foods = [
+        StorageFood(
+            id=row[0],
+            food_id=row[1],
             added_at=row[4],
             quantity=row[5]
         )
