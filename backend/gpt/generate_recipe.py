@@ -107,11 +107,15 @@ async def generate_recipe(ingredients: list[StorageWithFoodInfo], num_servings: 
         "max_tokens": 500
     }
 
-    """
-    DEBUG = True: GPT呼び出し無効
-    DEBUG = False: GPT呼び出し
-    """
-    DEBUG = False
+
+    is_debug = os.getenv('DEBUG')
+    DEBUG = True
+    if is_debug == "False":
+        DEBUG = False
+    elif is_debug == "True":
+        pass
+    else:
+        pass
 
     if DEBUG:
         recipe_suggestion = RecipeSuggestion(

@@ -88,12 +88,15 @@ async def detect_food(base64_image, session: AsyncSession):
     }
 
 
-    """
-    DEBUG = True: GPT呼び出し無効
-    DEBUG = False: GPT呼び出し
-    """
-
+    is_debug = os.getenv('DEBUG')
     DEBUG = True
+    if is_debug == "False":
+        DEBUG = False
+    elif is_debug == "True":
+        pass
+    else:
+        pass
+
     detected_foods = []
     if DEBUG:
         detected_foods.extend([
