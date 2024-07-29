@@ -5,6 +5,7 @@ import SmallButton from './SmallButton';
 import { UserContext } from '../context/userContext';
 import useSWRMutation from 'swr/mutation';
 import { RecipePostResponseContext } from '../context/recipeContext';
+import { RecipePostRequestType, RecipePostResponseType } from '../materialType';
 
 // BackButtonコンポーネントを動的にインポート（クライアントサイドでのみ使用）
 const BackButton = dynamic(() => import('./BackButton'), { ssr: false });
@@ -17,9 +18,9 @@ export default function RecipeSuggestion() {
   const { recipePostResponse, setRecipePostResponse } = useContext(RecipePostResponseContext);
 
   //ref初期化
-  const refNumServings = useRef(1)
-  const refIsUseStorageOnly = useRef<string>('true')
-  const refComment = useRef("")
+  const refNumServings = useRef<number>(1)
+  const refIsUseStorageOnly = useRef<'true'|'false'>('false')
+  const refComment = useRef<string>(null)
 
   // 遷移先のパスを指定
   const RecipeCreateAfter: pageModeType = "RecipeCreateAfter";
@@ -38,12 +39,7 @@ export default function RecipeSuggestion() {
   }
 
   //fetcher
-  const createSuggestion = async (url: string, {arg}: {arg: {
-    user_id: number,
-    num_servings: number,
-    uses_storages_only: string,
-    comment: string
-}}): Promise<Response> => {
+  const createSuggestion = async (url: string, {arg}: {arg: RecipePostRequestType}): Promise<RecipePostResponseType> => {
     const res = await fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -63,6 +59,7 @@ export default function RecipeSuggestion() {
       uses_storages_only: refIsUseStorageOnly.current,
       comment: refComment.current
     })
+    console.log(res)
 
     //チャットGPTに投げた後の処理
     if (res) {
@@ -85,7 +82,7 @@ export default function RecipeSuggestion() {
           className="border rounded p-2 mb-4 w-full h-24"
           placeholder="現在の気分や体調を入力してください あっさりしたものが食べたい気分 など…"
           onChange={(event) => handleComment(event)}
-        />
+         required/>
         <div className="mb-4">
           <select className="border rounded p-2 w-full" onChange={(event) => handleChangeServings(event)}>
             <option value="1">1人前</option>

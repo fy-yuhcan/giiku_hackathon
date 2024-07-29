@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext } from 'react';
 import useSWRMutation from 'swr/mutation';
-import { FoodDataType } from '../materialType';
+import { FoodType } from '../materialType';
 import { FoodContext } from '../context/foodContext';
 
 

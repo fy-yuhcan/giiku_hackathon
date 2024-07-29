@@ -23,11 +23,13 @@ export default function RecipeCreateAfter() {
 
   //fetcher
   const createSuggestion = async (url: string, {arg}: {arg: RecipePutType}) => {
-    await fetch(url, {
+    console.log(arg)
+    const res = await fetch(url, {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(arg)
     })
+    return res.json()
   }
 
   //useSWR定義
@@ -36,7 +38,10 @@ export default function RecipeCreateAfter() {
 
   //「作った」ボタンを押したらapiを呼び出し
   const handleCooked = async() => {
-    await trigger({user_id: user.user_id, recipe_id: recipePostResponse["id"]})
+    const res = await trigger({user_id: user.user_id, recipe_id: recipePostResponse.id})
+    if (!res) {
+      throw new Error("finished cooking request failed.")
+    }
     setPageMode(fridge)
   }
 

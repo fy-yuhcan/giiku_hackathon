@@ -89,34 +89,47 @@ async def detect_food(base64_image, session: AsyncSession):
 
 
     """
-    GPT呼び出し節約のため
-
-    async with aiohttp.ClientSession() as async_session:
-        async with async_session.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload) as response:
-            response_json = await response.json()
-            detected_foods =response_json["choices"][0]["message"]["content"]
-            detected_foods = detected_foods.strip("```json\n").strip("\n```")
-            detected_foods = json.loads(detected_foods)
-
+    DEBUG = True: GPT呼び出し無効
+    DEBUG = False: GPT呼び出し
     """
+
+    DEBUG = True
+    detected_foods = []
+    if DEBUG:
+        detected_foods.extend([
+            {'name': 'スイカ', 'quantity': 1, 'unit': '個'},
+            {'name': 'メロン', 'quantity': 1, 'unit': '個'},
+            {'name': 'リンゴ', 'quantity': 2, 'unit': '個'},
+            {'name': 'オレンジ', 'quantity': 1, 'unit': '個'},
+            {'name': 'グリーンアップル', 'quantity': 1, 'unit': '個'},
+            {'name': 'グレープフルーツ', 'quantity': 1, 'unit': '個'}
+        ])
+    else:
+        async with aiohttp.ClientSession() as async_session:
+            async with async_session.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload) as response:
+                response_json = await response.json()
+                detected_foods.extend(response_json["choices"][0]["message"]["content"])
+                detected_foods = detected_foods.strip("```json\n").strip("\n```")
+                detected_foods = json.loads(detected_foods)
+  
+
 
     # 全件取得した食品データを参照してIDを割り振る
     foods = await get_foods(session)
     food_data = {food.name: {"id": food.id, "unit": food.unit} for food in foods}
-    
 
-    detected_foods = [
-        {'name': 'りんご', 'quantity': 2, 'unit': '個'},
-    ]
-
-
-    for item in detected_foods:
-        food_name = item["name"]
+    post_detected_foods = []
+    for detected_food in detected_foods:
+        print("detected_food:", detected_food)
+        food_name = detected_food["name"]
         if food_name in food_data:
-            item["food_id"] = food_data[food_name]["id"]
-            item["unit"] = food_data[food_name]["unit"]
+            detected_food["food_id"] = food_data[food_name]["id"]
+            detected_food["unit"] = food_data[food_name]["unit"]
 
-    return detected_foods
+            #foodテーブルにない食材があるとエラーが起きるのでとりあえずあるものだけ送信
+            post_detected_foods.append(detected_food)
+
+    return post_detected_foods
 
 
     
